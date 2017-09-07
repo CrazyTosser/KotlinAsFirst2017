@@ -35,7 +35,17 @@ fun minBiRoot(a: Double, b: Double, c: Double): Double {
  * Мой возраст. Для заданного 0 < n < 200, рассматриваемого как возраст человека,
  * вернуть строку вида: «21 год», «32 года», «12 лет».
  */
-fun ageDescription(age: Int): String = TODO()
+fun ageDescription(age: Int): String{
+    if(age >= 10 && age <= 20 || age >=110 && age <= 120) {
+        return age.toString() + " лет"
+    }
+    when(age.toString().last()){
+        '1' -> return age.toString() + " год"
+        '2','3','4' -> return return age.toString() + " года"
+        '5', '6', '7', '8', '9', '0' -> return return age.toString() + " лет"
+    }
+    return age.toString() + " год"
+}
 
 /**
  * Простая
@@ -87,7 +97,16 @@ fun whichRookThreatens(kingX: Int, kingY: Int,
  */
 fun rookOrBishopThreatens(kingX: Int, kingY: Int,
                           rookX: Int, rookY: Int,
-                          bishopX: Int, bishopY: Int): Int = TODO()
+                          bishopX: Int, bishopY: Int): Int {
+    val kingBishDifX = kingX - bishopX
+    val kingBishDifY = kingY - bishopY
+    return when {
+        kingX != rookX && kingY != rookY && Math.abs(kingBishDifX) != Math.abs(kingBishDifY) -> 0
+        (kingX == rookX || kingY == rookY) && Math.abs(kingBishDifX) != Math.abs(kingBishDifY) -> 1
+        kingX != rookX && kingY != rookY && Math.abs(kingBishDifX) == Math.abs(kingBishDifY) -> 2
+        else -> 3
+    }
+}
 
 /**
  * Простая
