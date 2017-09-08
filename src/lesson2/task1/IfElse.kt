@@ -39,12 +39,11 @@ fun ageDescription(age: Int): String{
     if(age >= 10 && age <= 20 || age >=110 && age <= 120) {
         return age.toString() + " лет"
     }
-    when(age.toString().last()){
-        '1' -> return age.toString() + " год"
-        '2','3','4' -> return return age.toString() + " года"
-        '5', '6', '7', '8', '9', '0' -> return return age.toString() + " лет"
+    return when(age%10){
+        1 -> age.toString() + " год"
+        2,3,4 -> age.toString() + " года"
+        else -> age.toString() + " лет"
     }
-    return age.toString() + " год"
 }
 
 /**
@@ -76,14 +75,12 @@ fun timeForHalfWay(t1: Double, v1: Double,
  */
 fun whichRookThreatens(kingX: Int, kingY: Int,
                        rookX1: Int, rookY1: Int,
-                       rookX2: Int, rookY2: Int): Int {
-    return when {
+                       rookX2: Int, rookY2: Int): Int = when {
         kingX != rookX1 && kingY != rookY1 && kingX != rookX2 && kingY != rookY2 -> 0
         (kingX == rookX1 || kingY == rookY1) && kingX != rookX2 && kingY != rookY2 -> 1
         (kingX != rookX1 && kingY != rookY1 && (kingX == rookX2 || kingY == rookY2)) -> 2
         else -> 3
     }
-}
 
 /**
  * Простая
