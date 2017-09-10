@@ -2,6 +2,7 @@
 package lesson2.task2
 
 import lesson1.task1.sqr
+import java.lang.Math.sqrt
 
 /**
  * Пример
@@ -36,8 +37,7 @@ fun queenThreatens(x1: Int, y1: Int, x2: Int, y2: Int): Boolean = (((x1 == x2) |
  * Вернуть true, если утверждение верно
  */
 fun circleInside(x1: Double, y1: Double, r1: Double,
-                 x2: Double, y2: Double, r2: Double): Boolean = sqr(x1 + r1 - x2) + sqr(y1 - y2)  <= sqr(r2) && sqr(x1 - r1 - x2) + sqr(y1 - y2)  <= sqr(r2) &&
-        sqr(x1 - x2) + sqr(y1 + r1 - y2)  <= sqr(r2) && sqr(x1 - x2) + sqr(y1 - r1 - y2)  <= sqr(r2)
+                 x2: Double, y2: Double, r2: Double): Boolean = sqrt(sqr(x1 - x2) + sqr(y1 - y2)) + r1 <= r2
 
 /**
  * Средняя
