@@ -3,6 +3,7 @@ package lesson3.task1
 
 import lesson1.task1.sqr
 import java.lang.Math.abs
+import java.lang.Math.pow
 
 /**
  * Пример
@@ -135,10 +136,13 @@ fun isCoPrime(m: Int, n: Int): Boolean = nod(m,n)== 1
  * Например, для интервала 21..28 21 <= 5*5 <= 28, а для интервала 51..61 квадрата не существует.
  */
 fun squareBetweenExists(m: Int, n: Int): Boolean{
-    var res = 1.0
-    while (sqr(res)<n) res++
-    if(m <= sqr(res) && sqr(res) <= n) return true
-    else return false
+    if (m <= sqr(1.0) && sqr(1.0) <= n) return true
+    var res = 2.0
+    while (sqr(res)<n) {
+        if (m <= sqr(res) && sqr(res) <= n) return true
+        res++
+    }
+    return false
 }
 
 /**
@@ -148,7 +152,18 @@ fun squareBetweenExists(m: Int, n: Int): Boolean{
  * sin(x) = x - x^3 / 3! + x^5 / 5! - x^7 / 7! + ...
  * Нужную точность считать достигнутой, если очередной член ряда меньше eps по модулю
  */
-fun sin(x: Double, eps: Double): Double = TODO()
+fun sin(x: Double, eps: Double): Double {
+    var res = 0.0
+    var xClean = x
+    var counter = 1.0
+    while(xClean > 2 * Math.PI)
+        xClean -= 2 * Math.PI
+    while(pow(xClean,counter)/ factorial(counter.toInt()) > eps){
+        res += pow(-1.0, (2 - counter.toInt()/2 % 2).toDouble()) * pow(xClean,counter)/ factorial(counter.toInt())
+        counter+=2
+    }
+    return res
+}
 
 /**
  * Средняя
@@ -157,7 +172,18 @@ fun sin(x: Double, eps: Double): Double = TODO()
  * cos(x) = 1 - x^2 / 2! + x^4 / 4! - x^6 / 6! + ...
  * Нужную точность считать достигнутой, если очередной член ряда меньше eps по модулю
  */
-fun cos(x: Double, eps: Double): Double = TODO()
+fun cos(x: Double, eps: Double): Double {
+    var res = 0.0
+    var xClean = x
+    var counter = 0.0
+    while(xClean > 2 * Math.PI)
+        xClean -= 2 * Math.PI
+    while(pow(xClean,counter)/ factorial(counter.toInt()) > eps){
+        res += pow(-1.0, (2 - counter.toInt()/2 % 2).toDouble()) * pow(xClean,counter)/ factorial(counter.toInt())
+        counter+=2
+    }
+    return res
+}
 
 /**
  * Средняя
@@ -165,7 +191,16 @@ fun cos(x: Double, eps: Double): Double = TODO()
  * Поменять порядок цифр заданного числа n на обратный: 13478 -> 87431.
  * Не использовать строки при решении задачи.
  */
-fun revert(n: Int): Int = TODO()
+fun revert(n: Int): Int{
+    var res = 0
+    var tmp = n
+    while(tmp>0){
+        res *= 10
+        res += tmp%10
+        tmp /=10
+    }
+    return res
+}
 
 /**
  * Средняя
@@ -197,7 +232,12 @@ fun isPalindrome(n: Int): Boolean {
  * Для заданного числа n определить, содержит ли оно различающиеся цифры.
  * Например, 54 и 323 состоят из разных цифр, а 111 и 0 из одинаковых.
  */
-fun hasDifferentDigits(n: Int): Boolean = TODO()
+fun hasDifferentDigits(n: Int): Boolean{
+    val tmp = n.toString()[0]
+    for(i in 1..n.toString().length-1)
+        if(tmp!=n.toString()[i]) return true
+    return false
+}
 
 /**
  * Сложная
