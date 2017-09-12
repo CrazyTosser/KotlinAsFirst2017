@@ -273,6 +273,7 @@ fun factorizeToString(n: Int): String{
  * например: n = 100, base = 4 -> (1, 2, 1, 0) или n = 250, base = 14 -> (1, 3, 12)
  */
 fun convert(n: Int, base: Int): List<Int> {
+    if(n == 0) return listOf(0)
     val res = mutableListOf<Int>()
     var a = n
     while(a!=0){
@@ -398,7 +399,22 @@ fun decimalFromString(str: String, base: Int): Int{
  * 90 = XC, 100 = C, 400 = CD, 500 = D, 900 = CM, 1000 = M.
  * Например: 23 = XXIII, 44 = XLIV, 100 = C
  */
-fun roman(n: Int): String = TODO()
+fun roman(n: Int): String{
+    var wN = n
+    val rom = mutableListOf<Pair<Int,String>>(Pair(1000, "M"),Pair(900, "CM"),Pair(500, "D"),Pair(400, "CD"),
+            Pair(100, "C"), Pair(90, "XC"), Pair(50, "L"),Pair(40, "XL"), Pair(10, "X"), Pair(9, "IX"),
+            Pair(5, "V"), Pair(4, "IV"), Pair(1, "I"))
+    var res = ""
+    while (rom.count()>0){
+        if(wN < rom[0].first)
+            rom.removeAt(0)
+        else{
+            wN -= rom[0].first
+            res += rom[0].second
+        }
+    }
+    return res
+}
 
 /**
  * Очень сложная
@@ -407,4 +423,51 @@ fun roman(n: Int): String = TODO()
  * Например, 375 = "триста семьдесят пять",
  * 23964 = "двадцать три тысячи девятьсот шестьдесят четыре"
  */
-fun russian(n: Int): String = TODO()
+fun russian(n: Int): String {
+    if(n == 0) return "ноль"
+    val sex = listOf<List<String>>(listOf("","один","два","три","четыре","пять","шесть","семь","восемь","девять"),
+            listOf("","одна","две","три","четыре","пять","шесть","семь","восемь","девять"))
+    val str100 = listOf<String>("","сто","двести","триста","четыреста","пятьсот","шестьсот","семьсот", "восемьсот","девятьсот")
+    val str11 = listOf<String>("","десять","одиннадцать","двенадцать","тринадцать","четырнадцать", "пятнадцать","шестнадцать","семнадцать","восемнадцать","девятнадцать","двадцать")
+    val str10 = listOf<String>("","десять","двадцать","тридцать","сорок","пятьдесят","шестьдесят", "семьдесят","восемьдесят","девяносто")
+    val form = listOf<String>("тысяча", "тысячи", "тысяч", "1")
+    val segments = mutableListOf<Int>()
+    var tmp = n
+    while(tmp>999){
+        val seg = tmp / 1000
+        segments.add(tmp - seg * 1000)
+        tmp = seg
+    }
+    segments.add(tmp)
+    segments.reverse()
+    var res = ""
+    var lev = segments.count()-1
+    for(ri in segments){
+        val sexi = lev
+        var rs = ri.toString()
+        if(rs.length==1) rs = "00"+ rs
+        if(rs.length==2) rs = "0" + rs
+        val r1 = rs.substring(0,1).toInt()
+        val r2 = rs.substring(1,2).toInt()
+        val r3 = rs.substring(2,3).toInt()
+        val r22 = rs.substring(1,3).toInt()
+        if(ri>99) res += str100[r1]+" "
+        if(r22>20){
+            res+=str10[r2]+" "
+            res+=sex[sexi][r3]+" "
+        }else{
+            if(r22>9) res += str11[r22-9]+" "
+            else if(r22>0 && r22<10) res += sex[sexi][r3]+ " "
+        }
+        if(lev==1){
+            val n10 = ri%100
+            val n1 = n10 %10
+            if(n10> 10 && n10 < 20) res+=form[2]+" "
+            else if(n1 > 1 && n1 <5) res += form[1]+" "
+            else if(n1==1) res += form[0]+" "
+            else res += form[2]+" "
+        }
+        lev--
+    }
+    return res.trim()
+}
