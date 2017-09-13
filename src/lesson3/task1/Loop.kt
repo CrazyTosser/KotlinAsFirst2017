@@ -211,14 +211,12 @@ fun isPalindrome(n: Int): Boolean {
     if (len == 1) return true
     val center: Int
     if (len % 2 == 1) {
-        center = (len + 1) / 2
-        for (i in 0..center - 1)
-            if (str[i] != str[len - i - 1]) return false
+        center = (len - 1) / 2
     } else {
         center = len / 2
-        for (i in 0..center)
-            if (str[i] != str[len - i - 1]) return false
     }
+    for (i in 0..center)
+        if (str[i] != str[len - i - 1]) return false
     return true
 }
 
@@ -229,10 +227,26 @@ fun isPalindrome(n: Int): Boolean {
  * Например, 54 и 323 состоят из разных цифр, а 111 и 0 из одинаковых.
  */
 fun hasDifferentDigits(n: Int): Boolean {
-    val tmp = n.toString()[0]
-    for (i in 1..n.toString().length - 1)
-        if (tmp != n.toString()[i]) return true
+    val nStr = n.toString()
+    val tmp = nStr[0]
+    for (i in nStr)
+        if (tmp != i) return true
     return false
+}
+
+//Фунция для squareSequenceDigit и fibSequenceDigit
+//Принимает n - номер искомой позиции в ряду и wrFun - лябда-функцию согласно которой ряд генерируется
+fun genStr(n: Int, wrFun: (Int) -> String): Int {
+    var counter = 1
+    var strLen = 0
+    var res = ""
+    while (strLen < n) {
+        res = wrFun(counter)
+        strLen += res.length
+        counter++
+    }
+    val resI = res.length - (strLen - n) - 1
+    return res[resI].toString().toInt()
 }
 
 /**
@@ -242,15 +256,7 @@ fun hasDifferentDigits(n: Int): Boolean {
  * 149162536496481100121144...
  * Например, 2-я цифра равна 4, 7-я 5, 12-я 6.
  */
-fun squareSequenceDigit(n: Int): Int {
-    var counter = 1.0
-    var str = ""
-    while (str.length < n) {
-        str += sqr(counter).toInt().toString()
-        counter++
-    }
-    return str[n - 1].toString().toInt()
-}
+fun squareSequenceDigit(n: Int): Int = genStr(n, { a -> "${a * a}" })
 
 /**
  * Сложная
@@ -259,12 +265,4 @@ fun squareSequenceDigit(n: Int): Int {
  * 1123581321345589144...
  * Например, 2-я цифра равна 1, 9-я 2, 14-я 5.
  */
-fun fibSequenceDigit(n: Int): Int {
-    var counter = 1
-    var str = ""
-    while (str.length < n) {
-        str += fib(counter).toString()
-        counter++
-    }
-    return str[n - 1].toString().toInt()
-}
+fun fibSequenceDigit(n: Int): Int = genStr(n, { a -> "${fib(a)}" })
