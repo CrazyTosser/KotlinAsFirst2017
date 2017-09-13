@@ -1,4 +1,5 @@
 @file:Suppress("UNUSED_PARAMETER")
+
 package lesson4.task1
 
 import lesson1.task1.discriminant
@@ -109,9 +110,9 @@ fun buildSumExample(list: List<Int>) = list.joinToString(separator = " + ", post
  * по формуле abs = sqrt(a1^2 + a2^2 + ... + aN^2).
  * Модуль пустого вектора считать равным 0.0.
  */
-fun abs(v: List<Double>): Double{
+fun abs(v: List<Double>): Double {
     var res = 0.0
-    for(i in v)
+    for (i in v)
         res += sqr(i)
     return sqrt(res)
 }
@@ -122,14 +123,8 @@ fun abs(v: List<Double>): Double{
  * Рассчитать среднее арифметическое элементов списка list. Вернуть 0.0, если список пуст
  */
 fun mean(list: List<Double>): Double {
-    if(list.count()==0) return 0.0
-    var res = 0.0
-    var count = 0
-    for (i in list){
-        res += i
-        count++
-    }
-    return res / count
+    if (list.count() == 0) return 0.0
+    return list.sum() / list.count()
 }
 
 /**
@@ -141,11 +136,10 @@ fun mean(list: List<Double>): Double {
  * Обратите внимание, что данная функция должна изменять содержание списка list, а не его копии.
  */
 fun center(list: MutableList<Double>): MutableList<Double> {
+    if (list.count() == 0) return list
     val mid = mean(list)
-    var c = 0
-    while(c<list.count()) {
+    for (c in 0..list.count() - 1) {
         list[c] -= mid
-        c++
     }
     return list
 }
@@ -157,12 +151,10 @@ fun center(list: MutableList<Double>): MutableList<Double> {
  * представленные в виде списков a и b. Скалярное произведение считать по формуле:
  * C = a1b1 + a2b2 + ... + aNbN. Произведение пустых векторов считать равным 0.0.
  */
-fun times(a: List<Double>, b: List<Double>): Double{
+fun times(a: List<Double>, b: List<Double>): Double {
     var res = 0.0
-    var i = 0
-    while(i<a.count()){
-        res += a[i]*b[i]
-        i++
+    for (i in 0..a.count() - 1) {
+        res += a[i] * b[i]
     }
     return res
 }
@@ -175,13 +167,11 @@ fun times(a: List<Double>, b: List<Double>): Double{
  * Коэффициенты многочлена заданы списком p: (p0, p1, p2, p3, ..., pN).
  * Значение пустого многочлена равно 0.0 при любом x.
  */
-fun polynom(p: List<Double>, x: Double): Double{
-    if(p.count()==0) return 0.0
-    var res = p[0]
-    var i = 1
-    while(i<p.count()){
-        res += p[i] * pow(x,i.toDouble())
-        i++
+fun polynom(p: List<Double>, x: Double): Double {
+    if (p.count() == 0) return 0.0
+    var res = 0.0
+    for ((i, elem) in p.withIndex()) {
+        res += elem * pow(x, i.toDouble())
     }
     return res
 }
@@ -196,11 +186,11 @@ fun polynom(p: List<Double>, x: Double): Double{
  *
  * Обратите внимание, что данная функция должна изменять содержание списка list, а не его копии.
  */
-fun accumulate(list: MutableList<Double>): MutableList<Double>{
-    if(list.count()==0) return list
+fun accumulate(list: MutableList<Double>): MutableList<Double> {
+    if (list.count() == 0) return list
     var res = list[0]
     var i = 1
-    while(i<list.count()){
+    while (i < list.count()) {
         res += list[i]
         list[i] = res
         i++
@@ -238,13 +228,13 @@ fun accumulate(list: MutableList<Double>): MutableList<Double>{
  */
 fun factorize(n: Int): List<Int> {
     var workN = n
-    val res :MutableList<Int> = mutableListOf()
-    for(i in 2..sqrt(n.toDouble()).toInt()-1)
-        while (workN % i == 0){
+    val res: MutableList<Int> = mutableListOf()
+    for (i in 2..sqrt(n.toDouble()).toInt() - 1)
+        while (workN % i == 0) {
             res.add(i)
             workN /= i
         }
-    if(workN!=1) res.add(workN)
+    if (workN != 1) res.add(workN)
     return res
 }
 
@@ -254,16 +244,7 @@ fun factorize(n: Int): List<Int> {
  * Разложить заданное натуральное число n > 1 на простые множители.
  * Результат разложения вернуть в виде строки, например 75 -> 3*5*5
  */
-fun factorizeToString(n: Int): String{
-    val tmp = factorize(n)
-    var i = 1
-    var res = tmp[0].toString()
-    while (i<tmp.count()){
-        res += "*${tmp[i]}"
-        i++
-    }
-    return res
-}
+fun factorizeToString(n: Int): String = factorize(n).joinToString(separator = "*")
 
 /**
  * Средняя
@@ -273,15 +254,15 @@ fun factorizeToString(n: Int): String{
  * например: n = 100, base = 4 -> (1, 2, 1, 0) или n = 250, base = 14 -> (1, 3, 12)
  */
 fun convert(n: Int, base: Int): List<Int> {
-    if(n == 0) return listOf(0)
+    if (n == 0) return listOf(0)
     val res = mutableListOf<Int>()
     var a = n
-    while(a!=0){
-        res.add(a%base)
-        a/=base
+    while (a != 0) {
+        res.add(a % base)
+        a /= base
     }
     res.reverse()
-    return res.toList()
+    return res
 }
 
 /**
@@ -293,42 +274,10 @@ fun convert(n: Int, base: Int): List<Int> {
  * Например: n = 100, base = 4 -> 1210, n = 250, base = 14 -> 13c
  */
 fun convertToString(n: Int, base: Int): String {
-    val res = convert(n,base)
-    var resStr = ""
-    for(i in res){
-        resStr += when(i){
-            10 -> "a"
-            11 -> "b"
-            12 -> "c"
-            13 -> "d"
-            14 -> "e"
-            15 -> "f"
-            16 -> "g"
-            17 -> "h"
-            18 -> "i"
-            19 -> "j"
-            20 -> "k"
-            21 -> "l"
-            22 -> "m"
-            23 -> "n"
-            24 -> "o"
-            25 -> "p"
-            26 -> "q"
-            27 -> "r"
-            28 -> "s"
-            29 -> "t"
-            30 -> "u"
-            31 -> "v"
-            32 -> "w"
-            33 -> "x"
-            34 -> "y"
-            35 -> "z"
-            1,2,3,4,5,6,7,8,9 -> i.toString()
-            else -> "0"
-        }
-    }
-    return resStr
+    val res = convert(n, base).map { i -> if (i <= 9) i.toString() else ('a' + (i - 10)).toString() }
+    return res.joinToString(separator = "")
 }
+
 /**
  * Средняя
  *
@@ -339,8 +288,8 @@ fun convertToString(n: Int, base: Int): String {
 fun decimal(digits: List<Int>, base: Int): Int {
     var res = 0
     var r = digits.count().toDouble() - 1
-    for(i in digits){
-        res += (i * pow(base.toDouble(),r)).toInt()
+    for (i in digits) {
+        res += (i * pow(base.toDouble(), r)).toInt()
         r--
     }
     return res
@@ -355,40 +304,12 @@ fun decimal(digits: List<Int>, base: Int): Int {
  * 10 -> a, 11 -> b, 12 -> c и так далее.
  * Например: str = "13c", base = 14 -> 250
  */
-fun decimalFromString(str: String, base: Int): Int{
-    val resTmp= mutableListOf<Int>()
-    for(i in str){
-        resTmp.add(when(i.toString()){
-            "a" -> 10
-            "b" -> 11
-            "c" -> 12 
-            "d" -> 13 
-            "e" -> 14 
-            "f" -> 15 
-            "g" -> 16          
-			"h" -> 17 
-            "i" -> 18 
-            "j" -> 19 
-            "k" -> 20 
-            "l" -> 21 
-            "m" -> 22 
-            "n" -> 23 
-            "o" -> 24 
-            "p" -> 25 
-            "q" -> 26 
-            "r" -> 27 
-            "s" -> 28 
-            "t" -> 29 
-            "u" -> 30 
-            "v" -> 31 
-            "w" -> 32 
-            "x" -> 33 
-            "y" -> 34 
-            "z" -> 35
-            else -> i.toString().toInt()
-        })
+fun decimalFromString(str: String, base: Int): Int {
+    val resTmp = mutableListOf<Int>()
+    for (i in str) {
+        resTmp.add(if (i.toInt() < 58) i.toInt() - 48 else i.toInt() - 87)
     }
-    return decimal(resTmp.toList(),base)
+    return decimal(resTmp.toList(), base)
 }
 
 /**
@@ -399,21 +320,21 @@ fun decimalFromString(str: String, base: Int): Int{
  * 90 = XC, 100 = C, 400 = CD, 500 = D, 900 = CM, 1000 = M.
  * Например: 23 = XXIII, 44 = XLIV, 100 = C
  */
-fun roman(n: Int): String{
+fun roman(n: Int): String {
     var wN = n
-    val rom = mutableListOf<Pair<Int,String>>(Pair(1000, "M"),Pair(900, "CM"),Pair(500, "D"),Pair(400, "CD"),
-            Pair(100, "C"), Pair(90, "XC"), Pair(50, "L"),Pair(40, "XL"), Pair(10, "X"), Pair(9, "IX"),
+    val rom = mutableListOf<Pair<Int, String>>(Pair(1000, "M"), Pair(900, "CM"), Pair(500, "D"), Pair(400, "CD"),
+            Pair(100, "C"), Pair(90, "XC"), Pair(50, "L"), Pair(40, "XL"), Pair(10, "X"), Pair(9, "IX"),
             Pair(5, "V"), Pair(4, "IV"), Pair(1, "I"))
-    var res = ""
-    while (rom.count()>0){
-        if(wN < rom[0].first)
+    val res = StringBuilder()
+    while (rom.count() > 0) {
+        if (wN < rom[0].first)
             rom.removeAt(0)
-        else{
+        else {
             wN -= rom[0].first
-            res += rom[0].second
+            res.append(rom[0].second)
         }
     }
-    return res
+    return res.toString()
 }
 
 /**
@@ -424,50 +345,51 @@ fun roman(n: Int): String{
  * 23964 = "двадцать три тысячи девятьсот шестьдесят четыре"
  */
 fun russian(n: Int): String {
-    if(n == 0) return "ноль"
-    val sex = listOf<List<String>>(listOf("","один","два","три","четыре","пять","шесть","семь","восемь","девять"),
-            listOf("","одна","две","три","четыре","пять","шесть","семь","восемь","девять"))
-    val str100 = listOf<String>("","сто","двести","триста","четыреста","пятьсот","шестьсот","семьсот", "восемьсот","девятьсот")
-    val str11 = listOf<String>("","десять","одиннадцать","двенадцать","тринадцать","четырнадцать", "пятнадцать","шестнадцать","семнадцать","восемнадцать","девятнадцать","двадцать")
-    val str10 = listOf<String>("","десять","двадцать","тридцать","сорок","пятьдесят","шестьдесят", "семьдесят","восемьдесят","девяносто")
-    val form = listOf<String>("тысяча", "тысячи", "тысяч", "1")
+    if (n == 0) return "ноль"
+    val sex = listOf<List<String>>(listOf("", "один", "два", "три", "четыре", "пять", "шесть", "семь",
+            "восемь", "девять"),
+            listOf("", "одна", "две", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять"))
+    val str100 = listOf<String>("", "сто", "двести", "триста", "четыреста", "пятьсот", "шестьсот",
+            "семьсот", "восемьсот", "девятьсот")
+    val str11 = listOf<String>("", "десять", "одиннадцать", "двенадцать", "тринадцать", "четырнадцать", "пятнадцать",
+            "шестнадцать", "семнадцать", "восемнадцать", "девятнадцать", "двадцать")
+    val str10 = listOf<String>("", "десять", "двадцать", "тридцать", "сорок", "пятьдесят", "шестьдесят", "семьдесят",
+            "восемьдесят", "девяносто")
+    val form = listOf<String>("тысяча", "тысячи", "тысяч")
     val segments = mutableListOf<Int>()
     var tmp = n
-    while(tmp>999){
+    while (tmp > 999) {
         val seg = tmp / 1000
         segments.add(tmp - seg * 1000)
         tmp = seg
     }
     segments.add(tmp)
     segments.reverse()
-    var res = ""
-    var lev = segments.count()-1
-    for(ri in segments){
+    val res = StringBuilder()
+    var lev = segments.count() - 1
+    for (ri in segments) {
         val sexi = lev
-        var rs = ri.toString()
-        if(rs.length==1) rs = "00"+ rs
-        if(rs.length==2) rs = "0" + rs
-        val r1 = rs.substring(0,1).toInt()
-        val r2 = rs.substring(1,2).toInt()
-        val r3 = rs.substring(2,3).toInt()
-        val r22 = rs.substring(1,3).toInt()
-        if(ri>99) res += str100[r1]+" "
-        if(r22>20){
-            res+=str10[r2]+" "
-            res+=sex[sexi][r3]+" "
-        }else{
-            if(r22>9) res += str11[r22-9]+" "
-            else if(r22>0 && r22<10) res += sex[sexi][r3]+ " "
+        val r1 = ri / 100
+        val r22 = ri % 100
+        val r2 = r22 / 10
+        val r3 = ri % 10
+        if (ri > 99) res.append(str100[r1]).append(" ")
+        if (r22 > 20) {
+            res.append(str10[r2]).append(" ")
+            res.append(sex[sexi][r3]).append(" ")
+        } else {
+            if (r22 > 9) res.append(str11[r22 - 9]).append(" ")
+            else if (r22 in 1..9) res.append(sex[sexi][r3]).append(" ")
         }
-        if(lev==1){
-            val n10 = ri%100
-            val n1 = n10 %10
-            if(n10> 10 && n10 < 20) res+=form[2]+" "
-            else if(n1 > 1 && n1 <5) res += form[1]+" "
-            else if(n1==1) res += form[0]+" "
-            else res += form[2]+" "
+        if (lev == 1) {
+            val n10 = ri % 100
+            val n1 = n10 % 10
+            if (n10 in 11..19) res.append(form[2]).append(" ")
+            else if (n1 in 2..4) res.append(form[1]).append(" ")
+            else if (n1 == 1) res.append(form[0]).append(" ")
+            else res.append(form[2]).append(" ")
         }
         lev--
     }
-    return res.trim()
+    return res.toString().replace("  ", " ").trim()
 }
