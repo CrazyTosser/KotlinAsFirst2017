@@ -102,7 +102,7 @@ fun div(n:Int,wrFun:(Int,Int)->Int): Int {
     val tmp = round(sqrt(n.toDouble())).toInt()
     for (div in 2..tmp)
         if (wrFun(n, div) != -1) return wrFun(n, div)
-    return n
+    return 1
 }
 
 /**
@@ -141,6 +141,8 @@ fun squareBetweenExists(m: Int, n: Int): Boolean {
     return false
 }
 
+fun sqr(x:Int):Int = x*x
+
 /**
  * Средняя
  *
@@ -149,14 +151,19 @@ fun squareBetweenExists(m: Int, n: Int): Boolean {
  * Нужную точность считать достигнутой, если очередной член ряда меньше eps по модулю
  */
 fun sin(x: Double, eps: Double): Double {
-    var res = 0.0
     var xClean = x
-    var counter = 1.0
-    while (xClean > 2 * Math.PI)
-        xClean -= 2 * Math.PI
-    while (pow(xClean, counter) / factorial(counter.toInt()) > eps) {
-        res += pow(-1.0, (2 - counter.toInt() / 2 % 2).toDouble()) * pow(xClean, counter) / factorial(counter.toInt())
-        counter += 2
+    var counter = 1
+    var dif = if(xClean > 2* Math.PI) -2.0 else 2.0
+    while (xClean > 2 * Math.PI || xClean < 0)
+        xClean += dif * Math.PI
+    var res = xClean
+    dif = xClean
+    var mn = -1
+    while (abs(dif) > eps) {
+        dif = mn * pow(xClean,2.0*counter+1)/ factorial(2*counter+1)
+        res += dif
+        counter++
+        mn *= -1
     }
     return res
 }
@@ -169,14 +176,19 @@ fun sin(x: Double, eps: Double): Double {
  * Нужную точность считать достигнутой, если очередной член ряда меньше eps по модулю
  */
 fun cos(x: Double, eps: Double): Double {
-    var res = 0.0
     var xClean = x
-    var counter = 0.0
-    while (xClean > 2 * Math.PI)
-        xClean -= 2 * Math.PI
-    while (pow(xClean, counter) / factorial(counter.toInt()) > eps) {
-        res += pow(-1.0, (2 - counter.toInt() / 2 % 2).toDouble()) * pow(xClean, counter) / factorial(counter.toInt())
-        counter += 2
+    var counter = 1
+    var dif = if(xClean > 3*Math.PI/2) -2.0 else 2.0
+    while (xClean > 3*Math.PI/2 || xClean < -Math.PI/2)
+        xClean += dif * Math.PI
+    var res = 1.0
+    dif = xClean
+    var mn = -1
+    while (abs(dif) > eps) {
+        dif = mn * pow(xClean,2.0*counter)/ factorial(2*counter)
+        res += dif
+        counter++
+        mn *= -1
     }
     return res
 }
