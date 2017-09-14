@@ -97,27 +97,27 @@ fun nod(a: Int, b: Int): Int {
  */
 fun lcm(m: Int, n: Int): Int = m / nod(m, n) * n
 
-/**
- * Простая
- *
- * Для заданного числа n > 1 найти минимальный делитель, превышающий 1
- */
-fun minDivisor(n: Int): Int {
-    for (div in 2..n / 2)
-        if (n % div == 0) return div
+//Чет мне понравились функции с лямбдой
+fun div(n:Int,wrFun:(Int,Int)->Int): Int {
+    val tmp = round(sqrt(n.toDouble())).toInt()
+    for (div in 2..tmp)
+        if (wrFun(n, div) != -1) return wrFun(n, div)
     return n
 }
 
 /**
  * Простая
  *
+ * Для заданного числа n > 1 найти минимальный делитель, превышающий 1
+ */
+fun minDivisor(n: Int): Int = div(n,{a,b -> if(a%b==0) b else -1})
+
+/**
+ * Простая
+ *
  * Для заданного числа n > 1 найти максимальный делитель, меньший n
  */
-fun maxDivisor(n: Int): Int {
-    for (div in n / 2 downTo 1)
-        if (n % div == 0) return div
-    return n
-}
+fun maxDivisor(n: Int): Int = div(n,{a,b -> if(a % (a/b)==0) a/b else -1})
 
 /**
  * Простая
