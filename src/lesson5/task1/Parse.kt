@@ -66,7 +66,20 @@ fun main(args: Array<String>) {
  * День и месяц всегда представлять двумя цифрами, например: 03.04.2011.
  * При неверном формате входной строки вернуть пустую строку
  */
-fun dateStrToDigit(str: String): String = TODO()
+fun dateStrToDigit(str: String): String {
+    val wrL = str.split(" ").toMutableList()
+    val tes = listOf<String>("января", "февраля", "марта", "апреля", "мая",
+            "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря")
+    try {
+        val valid = tes.indexOf(wrL[1])
+        if(valid==-1)return ""
+        wrL[0] = twoDigitStr(wrL[0].toInt())
+        wrL[1] = twoDigitStr(valid+1)
+        return wrL.joinToString(separator = ".")
+    }catch (e: Exception){
+        return ""
+    }
+}
 
 /**
  * Средняя
@@ -75,7 +88,19 @@ fun dateStrToDigit(str: String): String = TODO()
  * Перевести её в строковый формат вида "15 июля 2016".
  * При неверном формате входной строки вернуть пустую строку
  */
-fun dateDigitToStr(digital: String): String = TODO()
+fun dateDigitToStr(digital: String): String {
+    val wrL = digital.split(".").toMutableList()
+    val tes = listOf<String>("января", "февраля", "марта", "апреля", "мая",
+            "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря")
+    try {
+        if(wrL.count()!=3) return ""
+        wrL[0] = if(wrL[0][0]=='0') wrL[0].substring(1) else wrL[0]
+        wrL[1] = tes[wrL[1].toInt()-1]
+        return wrL.joinToString(separator = " ")
+    }catch (e: Exception){
+        return ""
+    }
+}
 
 /**
  * Средняя
@@ -89,7 +114,10 @@ fun dateDigitToStr(digital: String): String = TODO()
  * Все символы в номере, кроме цифр, пробелов и +-(), считать недопустимыми.
  * При неверном формате вернуть пустую строку
  */
-fun flattenPhoneNumber(phone: String): String = TODO()
+fun flattenPhoneNumber(phone: String): String{
+    if(!phone.matches(Regex("""^[ \d\+\-\(\)]*$""")))return ""
+    return phone.replace(Regex("""[ \-\(\)]"""),"")
+}
 
 /**
  * Средняя
@@ -101,7 +129,12 @@ fun flattenPhoneNumber(phone: String): String = TODO()
  * Прочитать строку и вернуть максимальное присутствующее в ней число (717 в примере).
  * При нарушении формата входной строки или при отсутствии в ней чисел, вернуть -1.
  */
-fun bestLongJump(jumps: String): Int = TODO()
+fun bestLongJump(jumps: String): Int{
+    if(!jumps.matches(Regex("""^[ \d\-%]*$""")))return -1
+    if(jumps.matches(Regex("""^[ \-%]*$""")))return -1
+    val j = jumps.replace(Regex("""[\-%]"""),"").split(Regex(""" """)).filter { a-> !a.isEmpty() }.map { it.toInt() }
+    return j.max()!!
+}
 
 /**
  * Сложная
