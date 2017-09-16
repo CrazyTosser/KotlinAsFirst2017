@@ -1,4 +1,5 @@
 @file:Suppress("UNUSED_PARAMETER")
+
 package lesson5.task1
 
 /**
@@ -48,12 +49,10 @@ fun main(args: Array<String>) {
         val seconds = timeStrToSeconds(line)
         if (seconds == -1) {
             println("Введённая строка $line не соответствует формату ЧЧ:ММ:СС")
-        }
-        else {
+        } else {
             println("Прошло секунд с начала суток: $seconds")
         }
-    }
-    else {
+    } else {
         println("Достигнут <конец файла> в процессе чтения строки. Программа прервана")
     }
 }
@@ -72,11 +71,11 @@ fun dateStrToDigit(str: String): String {
             "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря")
     try {
         val valid = tes.indexOf(wrL[1])
-        if(valid==-1)return ""
+        if (valid == -1) return ""
         wrL[0] = twoDigitStr(wrL[0].toInt())
-        wrL[1] = twoDigitStr(valid+1)
+        wrL[1] = twoDigitStr(valid + 1)
         return wrL.joinToString(separator = ".")
-    }catch (e: Exception){
+    } catch (e: Exception) {
         return ""
     }
 }
@@ -93,11 +92,11 @@ fun dateDigitToStr(digital: String): String {
     val tes = listOf<String>("января", "февраля", "марта", "апреля", "мая",
             "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря")
     try {
-        if(wrL.count()!=3) return ""
-        wrL[0] = if(wrL[0][0]=='0') wrL[0].substring(1) else wrL[0]
-        wrL[1] = tes[wrL[1].toInt()-1]
+        if (wrL.count() != 3) return ""
+        wrL[0] = if (wrL[0][0] == '0') wrL[0].substring(1) else wrL[0]
+        wrL[1] = tes[wrL[1].toInt() - 1]
         return wrL.joinToString(separator = " ")
-    }catch (e: Exception){
+    } catch (e: Exception) {
         return ""
     }
 }
@@ -114,9 +113,9 @@ fun dateDigitToStr(digital: String): String {
  * Все символы в номере, кроме цифр, пробелов и +-(), считать недопустимыми.
  * При неверном формате вернуть пустую строку
  */
-fun flattenPhoneNumber(phone: String): String{
-    if(!phone.matches(Regex("""^[ \d\+\-\(\)]*$""")))return ""
-    return phone.replace(Regex("""[ \-\(\)]"""),"")
+fun flattenPhoneNumber(phone: String): String {
+    if (!phone.matches(Regex("""^[ \d\+\-\(\)]*$"""))) return ""
+    return phone.replace(Regex("""[ \-\(\)]"""), "")
 }
 
 /**
@@ -129,10 +128,10 @@ fun flattenPhoneNumber(phone: String): String{
  * Прочитать строку и вернуть максимальное присутствующее в ней число (717 в примере).
  * При нарушении формата входной строки или при отсутствии в ней чисел, вернуть -1.
  */
-fun bestLongJump(jumps: String): Int{
-    if(!jumps.matches(Regex("""^[ \d\-%]*$""")))return -1
-    if(jumps.matches(Regex("""^[ \-%]*$""")))return -1
-    val j = jumps.replace(Regex("""[\-%]"""),"").split(Regex(""" """)).filter { a-> !a.isEmpty() }.map { it.toInt() }
+fun bestLongJump(jumps: String): Int {
+    if (!jumps.matches(Regex("""^[ \d\-%]*$"""))) return -1
+    if (jumps.matches(Regex("""^[ \-%]*$"""))) return -1
+    val j = jumps.replace(Regex("""[\-%]"""), "").split(Regex(""" """)).filter { a -> !a.isEmpty() }.map { it.toInt() }
     return j.max()!!
 }
 
@@ -146,7 +145,16 @@ fun bestLongJump(jumps: String): Int{
  * Прочитать строку и вернуть максимальную взятую высоту (230 в примере).
  * При нарушении формата входной строки вернуть -1.
  */
-fun bestHighJump(jumps: String): Int = TODO()
+fun bestHighJump(jumps: String): Int {
+    if (!jumps.matches(Regex("""^[ \d\-%\+]*$"""))) return -1
+    val matchResult = Regex("""(?>\d+ \+)+""").findAll(jumps)
+    var res = 0
+    for (m in matchResult) {
+        val tmp = m.value.substring(0, m.value.indexOf(' ')).toInt()
+        res = if (tmp > res) tmp else res
+    }
+    return res
+}
 
 /**
  * Сложная
@@ -157,7 +165,26 @@ fun bestHighJump(jumps: String): Int = TODO()
  * Вернуть значение выражения (6 для примера).
  * Про нарушении формата входной строки бросить исключение IllegalArgumentException
  */
-fun plusMinus(expression: String): Int = TODO()
+fun plusMinus(expression: String): Int {
+    val wr = expression.split(' ')
+    var mg = 1
+    for (s in wr) {
+        if (s.matches(Regex("""(\d+)+"""))) {
+            mg++; if (mg > 2 || mg < 0) throw IllegalArgumentException()
+        } else if (s.matches(Regex("""[\+-]+"""))) {
+            mg--; if (mg > 2 || mg < 0) throw IllegalArgumentException()
+        } else throw IllegalArgumentException()
+    }
+    var res = wr[0].toInt()
+    for (s in 1 until wr.count() step 2) {
+        if(wr[s].equals("+")){
+            res += wr[s+1].toInt()
+        }else{
+            res -= wr[s+1].toInt()
+        }
+    }
+    return res
+}
 
 /**
  * Сложная
@@ -168,7 +195,16 @@ fun plusMinus(expression: String): Int = TODO()
  * Вернуть индекс начала первого повторяющегося слова, или -1, если повторов нет.
  * Пример: "Он пошёл в в школу" => результат 9 (индекс первого 'в')
  */
-fun firstDuplicateIndex(str: String): Int = TODO()
+fun firstDuplicateIndex(str: String): Int {
+    val res = mutableListOf<String>()
+    var dup = ""
+    for(s in str.toLowerCase().split(' ')){
+        if(s !in res) res.add(s)
+        else {dup = s; break}
+    }
+    if(dup.isEmpty()) return -1
+    else return str.indexOf(" "+dup+"")+1
+}
 
 /**
  * Сложная
@@ -181,7 +217,16 @@ fun firstDuplicateIndex(str: String): Int = TODO()
  * или пустую строку при нарушении формата строки.
  * Все цены должны быть положительными
  */
-fun mostExpensive(description: String): String = TODO()
+fun mostExpensive(description: String): String{
+    val matchResult = Regex("""(([а-яА-Я]* ([0-9]*\.?[0-9]+));?)""").findAll(description)
+    if(matchResult.count()==0) return ""
+    val res = mutableListOf<Pair<String,Double>>()
+    for (m in matchResult) {
+        val tmp = m.value.split(' ')
+        res.add(Pair(tmp[0],tmp[1].replace(";","").toDouble()))
+    }
+    return res.maxBy { it.second }!!.first
+}
 
 /**
  * Сложная
