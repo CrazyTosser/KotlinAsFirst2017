@@ -149,8 +149,8 @@ fun bestHighJump(jumps: String): Int {
     if (!jumps.matches(Regex("""^[ \d\-%\+]*$"""))) return -1
     val wr = jumps.split(' ')
     var res = 0
-    for(i in 0 until wr.count() step 2){
-        if(wr[i+1].contains('+')) {
+    for (i in 0 until wr.count() step 2) {
+        if (wr[i + 1].contains('+')) {
             val tmp = wr[i].toInt()
             if (res < tmp)
                 res = tmp
@@ -180,10 +180,10 @@ fun plusMinus(expression: String): Int {
     }
     var res = wr[0].toInt()
     for (s in 1 until wr.count() step 2) {
-        if(wr[s].equals("+")){
-            res += wr[s+1].toInt()
-        }else{
-            res -= wr[s+1].toInt()
+        if (wr[s].equals("+")) {
+            res += wr[s + 1].toInt()
+        } else {
+            res -= wr[s + 1].toInt()
         }
     }
     return res
@@ -201,12 +201,14 @@ fun plusMinus(expression: String): Int {
 fun firstDuplicateIndex(str: String): Int {
     val res = mutableListOf<String>()
     var dup = ""
-    for(s in str.toLowerCase().split(' ')){
-        if(s !in res) res.add(s)
-        else {dup = s; break}
+    for (s in str.toLowerCase().split(' ')) {
+        if (s !in res) res.add(s)
+        else {
+            dup = s; break
+        }
     }
-    if(dup.isEmpty()) return -1
-    else return str.indexOf(" "+dup+"")+1
+    if (dup.isEmpty()) return -1
+    else return str.indexOf(" " + dup + "") + 1
 }
 
 /**
@@ -220,13 +222,13 @@ fun firstDuplicateIndex(str: String): Int {
  * или пустую строку при нарушении формата строки.
  * Все цены должны быть положительными
  */
-fun mostExpensive(description: String): String{
+fun mostExpensive(description: String): String {
     val matchResult = Regex("""(([а-яА-Я]* ([0-9]*\.?[0-9]+));?)""").findAll(description)
-    if(matchResult.count()==0) return ""
-    val res = mutableListOf<Pair<String,Double>>()
+    if (matchResult.count() == 0) return ""
+    val res = mutableListOf<Pair<String, Double>>()
     for (m in matchResult) {
         val tmp = m.value.split(' ')
-        res.add(Pair(tmp[0],tmp[1].replace(";","").toDouble()))
+        res.add(Pair(tmp[0], tmp[1].replace(";", "").toDouble()))
     }
     return res.maxBy { it.second }!!.first
 }
@@ -242,22 +244,50 @@ fun mostExpensive(description: String): String{
  *
  * Вернуть -1, если roman не является корректным римским числом
  */
-fun fromRoman(roman: String): Int{
-    if (roman.isEmpty()) return 0
-    if (roman.startsWith("M")) return 1000 + fromRoman(roman.substring(1))
-    if (roman.startsWith("CM")) return 900 + fromRoman(roman.substring(2))
-    if (roman.startsWith("D")) return 500 + fromRoman(roman.substring(1))
-    if (roman.startsWith("CD")) return 400 + fromRoman(roman.substring(2))
-    if (roman.startsWith("C")) return 100 + fromRoman(roman.substring(1))
-    if (roman.startsWith("XC")) return 90 + fromRoman(roman.substring(2))
-    if (roman.startsWith("L")) return 50 + fromRoman(roman.substring(1))
-    if (roman.startsWith("XL")) return 40 + fromRoman(roman.substring(2))
-    if (roman.startsWith("X")) return 10 + fromRoman(roman.substring(1))
-    if (roman.startsWith("IX")) return 9 + fromRoman(roman.substring(2))
-    if (roman.startsWith("V")) return 5 + fromRoman(roman.substring(1))
-    if (roman.startsWith("IV")) return 4 + fromRoman(roman.substring(2))
-    if (roman.startsWith("I")) return 1 + fromRoman(roman.substring(1))
-    return -1
+fun fromRoman(roman: String): Int {
+    var res = -1
+    var tmp = 0
+    if (roman.isEmpty()) res = 0
+    if (roman.startsWith("M")) {
+        tmp = fromRoman(roman.substring(1)); return if (tmp != -1) 1000 + tmp else -1
+    }
+    if (roman.startsWith("CM")) {
+        tmp = fromRoman(roman.substring(2)); return if (tmp != -1) 900 + tmp else -1
+    }
+    if (roman.startsWith("D")) {
+        tmp = fromRoman(roman.substring(1)); return if (tmp != -1) 500 + tmp else -1
+    }
+    if (roman.startsWith("CD")) {
+        tmp = fromRoman(roman.substring(2)); return if (tmp != -1) 400 + tmp else -1
+    }
+    if (roman.startsWith("C")) {
+        tmp = fromRoman(roman.substring(1)); return if (tmp != -1) 100 + tmp else -1
+    }
+    if (roman.startsWith("XC")) {
+        tmp = fromRoman(roman.substring(2)); return if (tmp != -1) 90 + tmp else -1
+    }
+    if (roman.startsWith("L")) {
+        tmp = fromRoman(roman.substring(1)); return if (tmp != -1) 50 + tmp else -1
+    }
+    if (roman.startsWith("XL")) {
+        tmp = fromRoman(roman.substring(2)); return if (tmp != -1) 40 + tmp else -1
+    }
+    if (roman.startsWith("X")) {
+        tmp = fromRoman(roman.substring(1)); return if (tmp != -1) 10 + tmp else -1
+    }
+    if (roman.startsWith("IX")) {
+        tmp = fromRoman(roman.substring(2)); return if (tmp != -1) 9 + tmp else -1
+    }
+    if (roman.startsWith("V")) {
+        tmp = fromRoman(roman.substring(1)); return if (tmp != -1) 5 + tmp else -1
+    }
+    if (roman.startsWith("IV")) {
+        tmp = fromRoman(roman.substring(2)); return if (tmp != -1) 4 + tmp else -1
+    }
+    if (roman.startsWith("I")) {
+        tmp = fromRoman(roman.substring(1)); return if (tmp != -1) 1 + tmp else -1
+    }
+    return res
 }
 
 /**
@@ -297,45 +327,47 @@ fun fromRoman(roman: String): Int{
  *
  */
 fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
-    if(!commands.matches(Regex("""[\[><\+\-\] ]+"""))) throw IllegalArgumentException()
-    if(commands.count{it=='['} != commands.count{it==']'}) throw IllegalArgumentException()
-    val res = MutableList(cells,{0})
-    val jAdr = mutableListOf<Pair<Int,Int>>()
+    val res = MutableList(cells, { 0 })
+    if (commands.isEmpty()) return res
+    if (!commands.matches(Regex("""[\[><\+\-\] ]+"""))) throw IllegalArgumentException()
+    if (commands.count { it == '[' } != commands.count { it == ']' }) throw IllegalArgumentException()
+    val jAdr = mutableListOf<Pair<Int, Int>>()
     var rec = 0
-    for(i in 0 until commands.length){
-        if(commands[i]=='['){
+    for (i in 0 until commands.length) {
+        if (commands[i] == '[') {
             rec++
-            var tmp = i+1
-            while (rec>0){
-                if(commands[tmp]=='[') rec++
-                if(commands[tmp]==']') rec--
+            var tmp = i + 1
+            while (rec > 0) {
+                if (commands[tmp] == '[') rec++
+                if (commands[tmp] == ']') rec--
                 tmp++
             }
-            jAdr.add(Pair(i,tmp-1))
+            jAdr.add(Pair(i, tmp - 1))
         }
     }
     //'+' - mul, '-' - dec, ' ' - nop, '[' - jz, ']' - rnz
-    var curC = cells/2
+    var curC = cells / 2
     var pc = 0
     var lim = 0
-    while(lim < limit && pc < commands.length){
-        when(commands[pc]){
+    while (lim < limit && pc < commands.length) {
+        when (commands[pc]) {
             '+' -> res[curC]++
             '-' -> res[curC]--
             '>' -> curC++
             '<' -> curC--
             '[' ->
-                if(res[curC]==0){
-                    pc = jAdr.find {it.first==pc}?.second!!
+                if (res[curC] == 0) {
+                    pc = jAdr.find { it.first == pc }?.second!!
                 }
             ']' ->
-                if(res[curC]!=0){
+                if (res[curC] != 0) {
                     pc = jAdr.find { it.second == pc }?.first!!
                 }
-            ' ' -> {}
-            else ->  throw IllegalArgumentException()
+            ' ' -> {
+            }
+            else -> throw IllegalArgumentException()
         }
-        if(curC !in 0 until cells) throw IllegalStateException()
+        if (curC !in 0 until cells) throw IllegalStateException()
         lim++; pc++
     }
     return res
