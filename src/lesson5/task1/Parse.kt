@@ -147,11 +147,14 @@ fun bestLongJump(jumps: String): Int {
  */
 fun bestHighJump(jumps: String): Int {
     if (!jumps.matches(Regex("""^[ \d\-%\+]*$"""))) return -1
-    val matchResult = Regex("""(?>\d+ \+)+""").findAll(jumps)
+    val wr = jumps.split(' ')
     var res = 0
-    for (m in matchResult) {
-        val tmp = m.value.substring(0, m.value.indexOf(' ')).toInt()
-        res = if (tmp > res) tmp else res
+    for(i in 0 until wr.count() step 2){
+        if(wr[i+1].contains('+')) {
+            val tmp = wr[i].toInt()
+            if (res < tmp)
+                res = tmp
+        }
     }
     return res
 }
@@ -239,7 +242,23 @@ fun mostExpensive(description: String): String{
  *
  * Вернуть -1, если roman не является корректным римским числом
  */
-fun fromRoman(roman: String): Int = TODO()
+fun fromRoman(roman: String): Int{
+    if (roman.isEmpty()) return 0
+    if (roman.startsWith("M")) return 1000 + fromRoman(roman.substring(1))
+    if (roman.startsWith("CM")) return 900 + fromRoman(roman.substring(2))
+    if (roman.startsWith("D")) return 500 + fromRoman(roman.substring(1))
+    if (roman.startsWith("CD")) return 400 + fromRoman(roman.substring(2))
+    if (roman.startsWith("C")) return 100 + fromRoman(roman.substring(1))
+    if (roman.startsWith("XC")) return 90 + fromRoman(roman.substring(2))
+    if (roman.startsWith("L")) return 50 + fromRoman(roman.substring(1))
+    if (roman.startsWith("XL")) return 40 + fromRoman(roman.substring(2))
+    if (roman.startsWith("X")) return 10 + fromRoman(roman.substring(1))
+    if (roman.startsWith("IX")) return 9 + fromRoman(roman.substring(2))
+    if (roman.startsWith("V")) return 5 + fromRoman(roman.substring(1))
+    if (roman.startsWith("IV")) return 4 + fromRoman(roman.substring(2))
+    if (roman.startsWith("I")) return 1 + fromRoman(roman.substring(1))
+    return -1
+}
 
 /**
  * Очень сложная
@@ -277,4 +296,47 @@ fun fromRoman(roman: String): Int = TODO()
  * IllegalArgumentException должен бросаться даже если ошибочная команда не была достигнута в ходе выполнения.
  *
  */
-fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> = TODO()
+fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
+    if(!commands.matches(Regex("""[\[><\+\-\] ]+"""))) throw IllegalArgumentException()
+    if(commands.count{it=='['} != commands.count{it==']'}) throw IllegalArgumentException()
+    val res = MutableList(cells,{0})
+    val jAdr = mutableListOf<Pair<Int,Int>>()
+    var rec = 0
+    for(i in 0 until commands.length){
+        if(commands[i]=='['){
+            rec++
+            var tmp = i+1
+            while (rec>0){
+                if(commands[tmp]=='[') rec++
+                if(commands[tmp]==']') rec--
+                tmp++
+            }
+            jAdr.add(Pair(i,tmp-1))
+        }
+    }
+    //'+' - mul, '-' - dec, ' ' - nop, '[' - jz, ']' - rnz
+    var curC = cells/2
+    var pc = 0
+    var lim = 0
+    while(lim < limit && pc < commands.length){
+        when(commands[pc]){
+            '+' -> res[curC]++
+            '-' -> res[curC]--
+            '>' -> curC++
+            '<' -> curC--
+            '[' ->
+                if(res[curC]==0){
+                    pc = jAdr.find {it.first==pc}?.second!!
+                }
+            ']' ->
+                if(res[curC]!=0){
+                    pc = jAdr.find { it.second == pc }?.first!!
+                }
+            ' ' -> {}
+            else ->  throw IllegalArgumentException()
+        }
+        if(curC !in 0 until cells) throw IllegalStateException()
+        lim++; pc++
+    }
+    return res
+}
