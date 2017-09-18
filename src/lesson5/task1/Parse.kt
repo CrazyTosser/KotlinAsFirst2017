@@ -149,12 +149,16 @@ fun bestHighJump(jumps: String): Int {
     if (!jumps.matches(Regex("""^[ \d\-%\+]*$"""))) return -1
     val wr = jumps.split(' ')
     var res = 0
-    for (i in 0 until wr.count() step 2) {
-        if (wr[i + 1].contains('+')) {
-            val tmp = wr[i].toInt()
-            if (res < tmp)
-                res = tmp
+    try {
+        for (i in 0 until wr.count() step 2) {
+            if (wr[i + 1].contains('+')) {
+                val tmp = wr[i].toInt()
+                if (res < tmp)
+                    res = tmp
+            }
         }
+    } catch (e: Exception) {
+        return -1
     }
     return res
 }
@@ -337,11 +341,12 @@ fun computeDeviceCells(cells: Int, commands: String, limit: Int): List<Int> {
         if (commands[i] == '[') {
             rec++
             var tmp = i + 1
-            while (rec > 0) {
+            while (rec > 0 && tmp < commands.length) {
                 if (commands[tmp] == '[') rec++
                 if (commands[tmp] == ']') rec--
                 tmp++
             }
+            if (rec != 0) throw IllegalArgumentException()
             jAdr.add(Pair(i, tmp - 1))
         }
     }
