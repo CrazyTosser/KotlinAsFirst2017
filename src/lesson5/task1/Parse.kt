@@ -148,7 +148,7 @@ fun bestLongJump(jumps: String): Int {
 fun bestHighJump(jumps: String): Int {
     if (!jumps.matches(Regex("""^[ \d\-%\+]*$"""))) return -1
     val wr = jumps.split(' ')
-    var res = 0
+    var res = -1
     try {
         for (i in 0 until wr.count() step 2) {
             if (wr[i + 1].contains('+')) {
