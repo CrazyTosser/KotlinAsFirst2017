@@ -268,7 +268,7 @@ fun genStr(n: Int, wrFun: (Int) -> String): Int {
  * 149162536496481100121144...
  * Например, 2-я цифра равна 4, 7-я 5, 12-я 6.
  */
-fun squareSequenceDigit(n: Int): Int = genStr(n, { a -> "${a * a}" })
+fun squareSequenceDigit(n: Int): Int = genStr(n) { a -> "${a * a}" }
 
 /**
  * Сложная
@@ -277,4 +277,4 @@ fun squareSequenceDigit(n: Int): Int = genStr(n, { a -> "${a * a}" })
  * 1123581321345589144...
  * Например, 2-я цифра равна 1, 9-я 2, 14-я 5.
  */
-fun fibSequenceDigit(n: Int): Int = genStr(n, { a -> "${fib(a)}" })
+fun fibSequenceDigit(n: Int): Int = genStr(n) { a -> "${fib(a)}" }
