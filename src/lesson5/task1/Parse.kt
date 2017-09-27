@@ -66,8 +66,8 @@ fun main(args: Array<String>) {
  * При неверном формате входной строки вернуть пустую строку
  */
 fun dateStrToDigit(str: String): String {
-    if (str.length < 11) return ""
     val wrL = str.split(" ").toMutableList()
+    if (wrL.count() != 3) return ""
     val tes = listOf<String>("января", "февраля", "марта", "апреля", "мая",
             "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря")
         val valid = tes.indexOf(wrL[1])
@@ -86,7 +86,7 @@ fun dateStrToDigit(str: String): String {
  */
 fun dateDigitToStr(digital: String): String {
     val wrL = digital.split(".").toMutableList()
-    if (wrL.count() == 0) return ""
+    if (wrL.count() != 3) return ""
     var mon = 0
     try {
         mon = wrL[1].toInt() - 1
@@ -149,7 +149,7 @@ fun bestLongJump(jumps: String): Int {
 fun bestHighJump(jumps: String): Int {
     if (!jumps.matches(Regex("""^[ \d\-%\+]*$"""))) return -1
     val wr = jumps.split(' ')
-    var res = 0
+    var res = -1
         for (i in 0 until wr.count() step 2) {
             if (wr[i + 1].contains('+')) {
                 val tmp = wr[i].toInt()
@@ -223,12 +223,12 @@ fun firstDuplicateIndex(str: String): Int {
  * Все цены должны быть положительными
  */
 fun mostExpensive(description: String): String {
-    val matchResult = Regex("""(([\wа-яА-Я]* ([0-9]*\.?[0-9]+));?)""").findAll(description)
-    if (matchResult.count() == 0) return ""
+    if (description.isEmpty()) return ""
     val res = mutableListOf<Pair<String, Double>>()
-    for (m in matchResult) {
-        val tmp = m.value.split(' ')
-        res.add(Pair(tmp[0], tmp[1].replace(";", "").toDouble()))
+    val spl = description.split(";")
+    for (m in spl) {
+        val tmp = m.trim().split(' ')
+        res.add(Pair(tmp[0], tmp[1].toDouble()))
     }
     return res.maxBy { it.second }!!.first
 }
