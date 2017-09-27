@@ -66,18 +66,15 @@ fun main(args: Array<String>) {
  * При неверном формате входной строки вернуть пустую строку
  */
 fun dateStrToDigit(str: String): String {
+    if (str.length < 11) return ""
     val wrL = str.split(" ").toMutableList()
     val tes = listOf<String>("января", "февраля", "марта", "апреля", "мая",
             "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря")
-    try {
         val valid = tes.indexOf(wrL[1])
         if (valid == -1) return ""
         wrL[0] = twoDigitStr(wrL[0].toInt())
         wrL[1] = twoDigitStr(valid + 1)
         return wrL.joinToString(separator = ".")
-    } catch (e: Exception) {
-        return ""
-    }
 }
 
 /**
@@ -89,16 +86,20 @@ fun dateStrToDigit(str: String): String {
  */
 fun dateDigitToStr(digital: String): String {
     val wrL = digital.split(".").toMutableList()
-    val tes = listOf<String>("января", "февраля", "марта", "апреля", "мая",
-            "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря")
+    if (wrL.count() == 0) return ""
+    var mon = 0
     try {
-        if (wrL.count() != 3) return ""
-        wrL[0] = if (wrL[0][0] == '0') wrL[0].substring(1) else wrL[0]
-        wrL[1] = tes[wrL[1].toInt() - 1]
-        return wrL.joinToString(separator = " ")
-    } catch (e: Exception) {
+        mon = wrL[1].toInt() - 1
+        if (mon !in 0..11) return ""
+    } catch (ex: NumberFormatException) {
         return ""
     }
+    val tes = listOf<String>("января", "февраля", "марта", "апреля", "мая",
+            "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря")
+        if (wrL.count() != 3) return ""
+        wrL[0] = if (wrL[0][0] == '0') wrL[0].substring(1) else wrL[0]
+    wrL[1] = tes[mon]
+        return wrL.joinToString(separator = " ")
 }
 
 /**
@@ -148,8 +149,7 @@ fun bestLongJump(jumps: String): Int {
 fun bestHighJump(jumps: String): Int {
     if (!jumps.matches(Regex("""^[ \d\-%\+]*$"""))) return -1
     val wr = jumps.split(' ')
-    var res = -1
-    try {
+    var res = 0
         for (i in 0 until wr.count() step 2) {
             if (wr[i + 1].contains('+')) {
                 val tmp = wr[i].toInt()
@@ -157,9 +157,6 @@ fun bestHighJump(jumps: String): Int {
                     res = tmp
             }
         }
-    } catch (e: Exception) {
-        return -1
-    }
     return res
 }
 
@@ -203,16 +200,15 @@ fun plusMinus(expression: String): Int {
  * Пример: "Он пошёл в в школу" => результат 9 (индекс первого 'в')
  */
 fun firstDuplicateIndex(str: String): Int {
-    val res = mutableListOf<String>()
     var dup = ""
+    var tmp = 0
     for (s in str.toLowerCase().split(' ')) {
-        if (s !in res) res.add(s)
-        else {
-            dup = s; break
-        }
+        if (s != dup) {
+            dup = s
+            tmp += s.length + 1
+        } else return tmp - s.length - 1
     }
-    if (dup.isEmpty()) return -1
-    else return str.indexOf(" " + dup + "") + 1
+    return -1
 }
 
 /**
@@ -227,7 +223,7 @@ fun firstDuplicateIndex(str: String): Int {
  * Все цены должны быть положительными
  */
 fun mostExpensive(description: String): String {
-    val matchResult = Regex("""(([а-яА-Я]* ([0-9]*\.?[0-9]+));?)""").findAll(description)
+    val matchResult = Regex("""(([\wа-яА-Я]* ([0-9]*\.?[0-9]+));?)""").findAll(description)
     if (matchResult.count() == 0) return ""
     val res = mutableListOf<Pair<String, Double>>()
     for (m in matchResult) {
