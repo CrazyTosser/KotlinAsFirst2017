@@ -2,7 +2,6 @@
 
 package lesson3.task1
 
-import lesson1.task1.sqr
 import java.lang.Math.*
 
 /**
@@ -110,14 +109,14 @@ fun div(n:Int,wrFun:(Int,Int)->Int): Int {
  *
  * Для заданного числа n > 1 найти минимальный делитель, превышающий 1
  */
-fun minDivisor(n: Int): Int = div(n,{a,b -> if(a%b==0) b else -1})
+fun minDivisor(n: Int): Int = div(n) { a, b -> if (a % b == 0) b else -1 }
 
 /**
  * Простая
  *
  * Для заданного числа n > 1 найти максимальный делитель, меньший n
  */
-fun maxDivisor(n: Int): Int = if (div(n,{a,b -> if(a % (a/b)==0) a/b else -1})==n) 1 else div(n,{a,b -> if(a % (a/b)==0) a/b else -1})
+fun maxDivisor(n: Int): Int = if (div(n) { a, b -> if (a % (a / b) == 0) a / b else -1 } == n) 1 else div(n) { a, b -> if (a % (a / b) == 0) a / b else -1 }
 
 /**
  * Простая
@@ -168,6 +167,13 @@ fun sin(x: Double, eps: Double): Double {
     return res
 }
 
+fun power(x: Double, p: Int): Double {
+    var res = 1.0
+    for (i in 0 until p)
+        res *= x
+    return res
+}
+
 /**
  * Средняя
  *
@@ -178,14 +184,14 @@ fun sin(x: Double, eps: Double): Double {
 fun cos(x: Double, eps: Double): Double {
     var xClean = x
     var counter = 1
-    var dif = if(xClean > 3*Math.PI/2) -2.0 else 2.0
-    while (xClean > 3*Math.PI/2 || xClean < -Math.PI/2)
+    var dif = if (xClean > Math.PI) -2.0 else 2.0
+    while (xClean > Math.PI || xClean < -Math.PI)
         xClean += dif * Math.PI
     var res = 1.0
     dif = xClean
     var mn = -1
     while (abs(dif) > eps) {
-        dif = mn * pow(xClean,2.0*counter)/ factorial(2*counter)
+        dif = mn * power(xClean, 2 * counter) / factorial(2 * counter)
         res += dif
         counter++
         mn *= -1

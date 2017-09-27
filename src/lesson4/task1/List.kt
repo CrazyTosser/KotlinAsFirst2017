@@ -168,7 +168,6 @@ fun times(a: List<Double>, b: List<Double>): Double {
  * Значение пустого многочлена равно 0.0 при любом x.
  */
 fun polynom(p: List<Double>, x: Double): Double {
-    if (p.count() == 0) return 0.0
     var res = 0.0
     for ((i, elem) in p.withIndex()) {
         res += elem * pow(x, i.toDouble())
@@ -288,8 +287,10 @@ fun convertToString(n: Int, base: Int): String {
 fun decimal(digits: List<Int>, base: Int): Int {
     var res = 0
     var r = digits.count().toDouble() - 1
+    var bTmp = pow(base.toDouble(), r).toInt()
     for (i in digits) {
-        res += (i * pow(base.toDouble(), r)).toInt()
+        res += i * bTmp
+        bTmp /= base
         r--
     }
     return res
@@ -337,6 +338,15 @@ fun roman(n: Int): String {
     return res.toString()
 }
 
+fun getThuosend(ri: Int): String {
+    val n10 = ri % 100
+    val n1 = n10 % 10
+    if (n10 in 11..19) return "тысяч"
+    else if (n1 in 2..4) return "тысячи"
+    else if (n1 == 1) return "тысяча"
+    else return "тысяч"
+}
+
 /**
  * Очень сложная
  *
@@ -355,7 +365,6 @@ fun russian(n: Int): String {
             "шестнадцать", "семнадцать", "восемнадцать", "девятнадцать", "двадцать")
     val str10 = listOf<String>("", "десять", "двадцать", "тридцать", "сорок", "пятьдесят", "шестьдесят", "семьдесят",
             "восемьдесят", "девяносто")
-    val form = listOf<String>("тысяча", "тысячи", "тысяч")
     val segments = mutableListOf<Int>()
     var tmp = n
     while (tmp > 999) {
@@ -365,7 +374,7 @@ fun russian(n: Int): String {
     }
     segments.add(tmp)
     segments.reverse()
-    val res = StringBuilder()
+    val res = mutableListOf<String>()
     var lev = segments.count() - 1
     for (ri in segments) {
         val sexi = lev
@@ -373,23 +382,18 @@ fun russian(n: Int): String {
         val r22 = ri % 100
         val r2 = r22 / 10
         val r3 = ri % 10
-        if (ri > 99) res.append(str100[r1]).append(" ")
+        if (ri > 99) res.add(str100[r1])
         if (r22 > 20) {
-            res.append(str10[r2]).append(" ")
-            res.append(sex[sexi][r3]).append(" ")
+            res.add(str10[r2])
+            res.add(sex[sexi][r3])
         } else {
-            if (r22 > 9) res.append(str11[r22 - 9]).append(" ")
-            else if (r22 in 1..9) res.append(sex[sexi][r3]).append(" ")
+            if (r22 > 9) res.add(str11[r22 - 9])
+            else if (r22 in 1..9) res.add(sex[sexi][r3])
         }
         if (lev == 1) {
-            val n10 = ri % 100
-            val n1 = n10 % 10
-            if (n10 in 11..19) res.append(form[2]).append(" ")
-            else if (n1 in 2..4) res.append(form[1]).append(" ")
-            else if (n1 == 1) res.append(form[0]).append(" ")
-            else res.append(form[2]).append(" ")
+            res.add(getThuosend(ri))
         }
         lev--
     }
-    return res.toString().replace("  ", " ").trim()
+    return res.filter { it != "" }.joinToString(separator = " ")
 }
