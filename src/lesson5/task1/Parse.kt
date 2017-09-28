@@ -115,7 +115,7 @@ fun dateDigitToStr(digital: String): String {
  * При неверном формате вернуть пустую строку
  */
 fun flattenPhoneNumber(phone: String): String {
-    if (!phone.matches(Regex("""^[ \d\+\-\(\)]*$"""))) return ""
+    if (!phone.matches(Regex("""^[ \d\+\-\(\)]{9,}$"""))) return ""
     return phone.replace(Regex("""[ \-\(\)]"""), "")
 }
 
@@ -228,7 +228,7 @@ fun mostExpensive(description: String): String {
     val res = mutableListOf<Pair<String, Double>>()
     val spl = description.split(";")
     for (m in spl) {
-        val tmp = m.trim().split(' ')
+        val tmp = m.trim().split(" ")
         res.add(Pair(tmp[0], tmp[1].toDouble()))
     }
     return res.maxBy { it.second }!!.first
