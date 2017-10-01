@@ -116,7 +116,9 @@ fun minDivisor(n: Int): Int = div(n) { a, b -> if (a % b == 0) b else -1 }
  *
  * Для заданного числа n > 1 найти максимальный делитель, меньший n
  */
-fun maxDivisor(n: Int): Int = if (div(n) { a, b -> if (a % (a / b) == 0) a / b else -1 } == n) 1 else div(n) { a, b -> if (a % (a / b) == 0) a / b else -1 }
+fun maxDivisor(n: Int): Int =
+        if (div(n) { a, b -> if (a % (a / b) == 0) a / b else -1 } == n) 1
+        else div(n) { a, b -> if (a % (a / b) == 0) a / b else -1 }
 
 /**
  * Простая
