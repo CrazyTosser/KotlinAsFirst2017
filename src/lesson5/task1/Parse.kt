@@ -233,7 +233,6 @@ fun mostExpensive(description: String): String {
     }
     return res.maxBy { it.second }!!.first
 }
-
 /**
  * Сложная
  *
@@ -246,49 +245,31 @@ fun mostExpensive(description: String): String {
  * Вернуть -1, если roman не является корректным римским числом
  */
 fun fromRoman(roman: String): Int {
-    var res = -1
+    val rom = mutableListOf<Pair<Int, String>>(Pair(1000, "M"), Pair(900, "CM"), Pair(500, "D"), Pair(400, "CD"),
+            Pair(100, "C"), Pair(90, "XC"), Pair(50, "L"), Pair(40, "XL"), Pair(10, "X"), Pair(9, "IX"),
+            Pair(5, "V"), Pair(4, "IV"), Pair(1, "I"))
+    var res = 0
     var tmp = 0
-    if (roman.isEmpty()) res = 0
-    if (roman.startsWith("M")) {
-        tmp = fromRoman(roman.substring(1)); return if (tmp != -1) 1000 + tmp else -1
+    while (rom.count() != 0) {
+        if (rom[0].second.length == 1) {
+            if (roman.substring(tmp, tmp + 1) == rom[0].second) {
+                res += rom[0].first
+                tmp++
+            } else
+                rom.removeAt(0)
+        } else {
+            if (roman.length < 2) {
+                rom.removeAt(0); continue
+            }
+            if (roman.substring(tmp, tmp + 2) == rom[0].second) {
+                res += rom[0].first
+                tmp += 2
+            } else
+                rom.removeAt(0)
+        }
+        if (tmp == roman.length) break
     }
-    if (roman.startsWith("CM")) {
-        tmp = fromRoman(roman.substring(2)); return if (tmp != -1) 900 + tmp else -1
-    }
-    if (roman.startsWith("D")) {
-        tmp = fromRoman(roman.substring(1)); return if (tmp != -1) 500 + tmp else -1
-    }
-    if (roman.startsWith("CD")) {
-        tmp = fromRoman(roman.substring(2)); return if (tmp != -1) 400 + tmp else -1
-    }
-    if (roman.startsWith("C")) {
-        tmp = fromRoman(roman.substring(1)); return if (tmp != -1) 100 + tmp else -1
-    }
-    if (roman.startsWith("XC")) {
-        tmp = fromRoman(roman.substring(2)); return if (tmp != -1) 90 + tmp else -1
-    }
-    if (roman.startsWith("L")) {
-        tmp = fromRoman(roman.substring(1)); return if (tmp != -1) 50 + tmp else -1
-    }
-    if (roman.startsWith("XL")) {
-        tmp = fromRoman(roman.substring(2)); return if (tmp != -1) 40 + tmp else -1
-    }
-    if (roman.startsWith("X")) {
-        tmp = fromRoman(roman.substring(1)); return if (tmp != -1) 10 + tmp else -1
-    }
-    if (roman.startsWith("IX")) {
-        tmp = fromRoman(roman.substring(2)); return if (tmp != -1) 9 + tmp else -1
-    }
-    if (roman.startsWith("V")) {
-        tmp = fromRoman(roman.substring(1)); return if (tmp != -1) 5 + tmp else -1
-    }
-    if (roman.startsWith("IV")) {
-        tmp = fromRoman(roman.substring(2)); return if (tmp != -1) 4 + tmp else -1
-    }
-    if (roman.startsWith("I")) {
-        tmp = fromRoman(roman.substring(1)); return if (tmp != -1) 1 + tmp else -1
-    }
-    return res
+    return if (tmp == roman.length) res else -1
 }
 
 /**

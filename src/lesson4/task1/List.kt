@@ -277,6 +277,13 @@ fun convertToString(n: Int, base: Int): String {
     return res.joinToString(separator = "")
 }
 
+fun toStep(mn: Int, st: Int): Int {
+    var res = 1
+    for (i in 1..st)
+        res *= mn
+    return res
+}
+
 /**
  * Средняя
  *
@@ -286,8 +293,8 @@ fun convertToString(n: Int, base: Int): String {
  */
 fun decimal(digits: List<Int>, base: Int): Int {
     var res = 0
-    var r = digits.count().toDouble() - 1
-    var bTmp = pow(base.toDouble(), r).toInt()
+    var r = digits.count() - 1
+    var bTmp = toStep(base, r)
     for (i in digits) {
         res += i * bTmp
         bTmp /= base
