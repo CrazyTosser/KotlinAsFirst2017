@@ -259,7 +259,7 @@ fun fromRoman(roman: String): Int {
             } else
                 rom.removeAt(0)
         } else {
-            if (roman.length < 2) {
+            if (roman.length - tmp < 2) {
                 rom.removeAt(0); continue
             }
             if (roman.substring(tmp, tmp + 2) == rom[0].second) {

@@ -2,6 +2,8 @@
 
 package lesson6.task2
 
+import com.sun.org.apache.xerces.internal.impl.xpath.regex.Match
+
 /**
  * Клетка шахматной доски. Шахматная доска квадратная и имеет 8 х 8 клеток.
  * Поэтому, обе координаты клетки (горизонталь row, вертикаль column) могут находиться в пределах от 1 до 8.
@@ -120,11 +122,11 @@ fun rookTrajectory(start: Square, end: Square): List<Square> {
  * Примеры: bishopMoveNumber(Square(3, 1), Square(6, 3)) = -1; bishopMoveNumber(Square(3, 1), Square(3, 7)) = 2.
  * Слон может пройти через клетку (6, 4) к клетке (3, 7).
  */
-fun bishopMoveNumber(start: Square, end: Square): Int {
-    if (start.row % 2 != end.row % 2 || start.column % 2 != end.column % 2) return -1
-    if (start.equals(end)) return 0
-    if (end.row - start.row == end.column - start.column) return 1
-    return 2
+fun bishopMoveNumber(start: Square, end: Square): Int = when {
+    (start.row % 2 != end.row % 2 || start.column % 2 != end.column % 2) -> -1
+    (start.equals(end)) -> 0
+    (end.row - start.row == end.column - start.column) -> 1
+    else -> 2
 }
 /**
  * Сложная
@@ -144,8 +146,21 @@ fun bishopMoveNumber(start: Square, end: Square): Int {
  *          bishopTrajectory(Square(1, 3), Square(6, 8)) = listOf(Square(1, 3), Square(6, 8))
  * Если возможно несколько вариантов самой быстрой траектории, вернуть любой из них.
  */
-fun bishopTrajectory(start: Square, end: Square): List<Square> = TODO()
-
+fun bishopTrajectory(start: Square, end: Square): List<Square> {
+    if (bishopMoveNumber(start, end) == -1) return listOf()
+    if (bishopMoveNumber(start, end) == 0) return listOf<Square>(start)
+    var res = mutableListOf<Square>(start)
+    if (Math.abs(end.column - start.column) == Math.abs(end.row - start.row)) res.add(end)
+    else {
+        val tmp = if ((end.row - start.row) % 2 == 1) (end.row - start.row) / 2 + 1
+        else (end.row - start.row) / 2
+        val x = if (start.column + tmp in 1..8) start.column + tmp else start.column - tmp
+        val y = if (start.row + tmp in 1..8) start.row + tmp else start.row - tmp
+        res.add(Square(x, y))
+        res.add(end)
+    }
+    return res
+}
 /**
  * Средняя
  *
