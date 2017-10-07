@@ -36,7 +36,6 @@ data class Square(val column: Int, val row: Int) {
  * Если нотация некорректна, бросить IllegalArgumentException
  */
 fun square(notation: String): Square {
-    if (notation.length != 2) throw IllegalArgumentException()
     val col = notation[0].toInt() - 96
     val row = notation[1].toInt() - 48
     if (col < 1 || col > 104 || row < 1 || row > 8) throw IllegalArgumentException()
@@ -128,8 +127,7 @@ fun bishopMoveNumber(start: Square, end: Square): Int = when {
     ((start.row + start.column) % 2 != (end.row + end.column) % 2) -> -1
     (start == end) -> 0
     (end.row - start.row == end.column - start.column) -> 1
-    (end.row == start.row || end.column == start.column) -> 2
-    else -> 3
+    else -> 2
 }
 
 /**
