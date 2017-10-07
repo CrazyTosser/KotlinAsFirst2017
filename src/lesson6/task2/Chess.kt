@@ -2,8 +2,6 @@
 
 package lesson6.task2
 
-import com.sun.org.apache.xerces.internal.impl.xpath.regex.Match
-
 /**
  * Клетка шахматной доски. Шахматная доска квадратная и имеет 8 х 8 клеток.
  * Поэтому, обе координаты клетки (горизонталь row, вертикаль column) могут находиться в пределах от 1 до 8.
@@ -221,14 +219,25 @@ fun kingTrajectory(start: Square, end: Square): List<Square> {
     val res = mutableListOf<Square>(start)
     var x = start.column
     var y = start.row
-    while (x != end.column) {
-        res.add(Square(if (x > end.column) ++x else --x,
-                if (y > end.row) ++y else --y))
-    }
+    //движение по диагонали
+    if (end.column - x < end.row - y)
+        while (x != end.column)
+            res.add(Square(if (x < end.column) ++x else --x,
+                    if (y <= end.row) ++y else --y))
+    else if (end.column - x > end.row - y)
+        while (y != end.row)
+            res.add(Square(if (x <= end.column) ++x else --x,
+                    if (y <= end.row) ++y else --y))
+    //если достигли то возврат, иначе срезаем последний элемент
+    if (Square(x, y) == end)
+        return res
+    else
+        res.removeAt(res.count() - 1)
+    //Движение по прямой
     if (x == end.column)
-        (start.row..end.row).mapTo(res) { Square(x, it) }
+        (y..end.row).mapTo(res) { Square(x, it) }
     if (y == end.row)
-        (start.column..end.column).mapTo(res) { Square(it, y) }
+        (x..end.column).mapTo(res) { Square(it, y) }
     return res
 }
 
