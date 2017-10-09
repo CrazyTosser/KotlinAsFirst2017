@@ -232,6 +232,26 @@ fun kingTrajectory(start: Square, end: Square): List<Square> {
     return res
 }
 
+fun genKnightList(start: Square): List<Square> {
+    var res = mutableListOf<Square>()
+    var tmp = Square(start.column + 2, start.row + 1)
+    if (tmp.inside()) res.add(tmp)
+    tmp = Square(start.column + 2, start.row - 1)
+    if (tmp.inside()) res.add(tmp)
+    tmp = Square(start.column - 2, start.row + 1)
+    if (tmp.inside()) res.add(tmp)
+    tmp = Square(start.column - 2, start.row - 1)
+    if (tmp.inside()) res.add(tmp)
+    tmp = Square(start.column + 1, start.row + 2)
+    if (tmp.inside()) res.add(tmp)
+    tmp = Square(start.column + 1, start.row - 2)
+    if (tmp.inside()) res.add(tmp)
+    tmp = Square(start.column - 1, start.row + 2)
+    if (tmp.inside()) res.add(tmp)
+    tmp = Square(start.column - 1, start.row - 2)
+    if (tmp.inside()) res.add(tmp)
+    return res
+}
 /**
  * Сложная
  *
@@ -255,7 +275,16 @@ fun kingTrajectory(start: Square, end: Square): List<Square> {
  * Пример: knightMoveNumber(Square(3, 1), Square(6, 3)) = 3.
  * Конь может последовательно пройти через клетки (5, 2) и (4, 4) к клетке (6, 3).
  */
-fun knightMoveNumber(start: Square, end: Square): Int = TODO()
+fun knightMoveNumber(start: Square, end: Square): Int {
+    if (!start.inside() || !end.inside()) throw IllegalArgumentException()
+    if (start == end) return 0
+    var tmp = genKnightList(start)
+    if (end in tmp) return 1
+    var res = 1
+    for (t in tmp)
+        res += knightMoveNumber(t, end)
+    return res
+}
 
 /**
  * Очень сложная
