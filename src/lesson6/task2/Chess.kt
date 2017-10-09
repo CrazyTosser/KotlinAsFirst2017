@@ -2,8 +2,6 @@
 
 package lesson6.task2
 
-import com.sun.org.apache.xerces.internal.impl.xpath.regex.Match
-
 /**
  * Клетка шахматной доски. Шахматная доска квадратная и имеет 8 х 8 клеток.
  * Поэтому, обе координаты клетки (горизонталь row, вертикаль column) могут находиться в пределах от 1 до 8.
@@ -38,6 +36,7 @@ data class Square(val column: Int, val row: Int) {
  * Если нотация некорректна, бросить IllegalArgumentException
  */
 fun square(notation: String): Square {
+    if (notation.length != 2) throw IllegalArgumentException()
     val col = notation[0].toInt() - 96
     val row = notation[1].toInt() - 48
     if (col < 1 || col > 104 || row < 1 || row > 8) throw IllegalArgumentException()
@@ -129,8 +128,7 @@ fun bishopMoveNumber(start: Square, end: Square): Int = when {
     ((start.row + start.column) % 2 != (end.row + end.column) % 2) -> -1
     (start == end) -> 0
     (end.row - start.row == end.column - start.column) -> 1
-    (end.row == start.row || end.column == start.column) -> 2
-    else -> 3
+    else -> 2
 }
 
 /**
@@ -221,14 +219,25 @@ fun kingTrajectory(start: Square, end: Square): List<Square> {
     val res = mutableListOf<Square>(start)
     var x = start.column
     var y = start.row
-    while (x != end.column) {
-        res.add(Square(if (x > end.column) ++x else --x,
-                if (y > end.row) ++y else --y))
-    }
+    //движение по диагонали
+    if (end.column - x < end.row - y)
+        while (x != end.column)
+            res.add(Square(if (x < end.column) ++x else --x,
+                    if (y <= end.row) ++y else --y))
+    else if (end.column - x > end.row - y)
+        while (y != end.row)
+            res.add(Square(if (x <= end.column) ++x else --x,
+                    if (y <= end.row) ++y else --y))
+    //если достигли то возврат, иначе срезаем последний элемент
+    if (Square(x, y) == end)
+        return res
+    else
+        res.removeAt(res.count() - 1)
+    //Движение по прямой
     if (x == end.column)
-        (start.row..end.row).mapTo(res) { Square(x, it) }
+        (y..end.row).mapTo(res) { Square(x, it) }
     if (y == end.row)
-        (start.column..end.column).mapTo(res) { Square(it, y) }
+        (x..end.column).mapTo(res) { Square(it, y) }
     return res
 }
 
