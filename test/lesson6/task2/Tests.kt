@@ -76,6 +76,7 @@ class Tests {
         assertEquals(1, bishopMoveNumber(square("a3"), square("e7")))
         assertEquals(2, bishopMoveNumber(square("c1"), square("c7")))
         assertEquals(2, bishopMoveNumber(square("a1"), square("h4")))
+        assertEquals(1, bishopMoveNumber(Square(3, 8), Square(8, 3)))
     }
 
     private fun List<Square>.assertBishopTrajectory(start: Square, end: Square, length: Int) {
