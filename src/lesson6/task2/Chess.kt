@@ -195,7 +195,7 @@ fun kingMoveNumber(start: Square, end: Square): Int = when {
         if ((start.column + start.row) % 2 == (end.column + end.row) % 2)
             Math.abs(end.row - start.row)
         else
-            Math.abs(end.row - start.row + 1) + 1
+            Math.max(Math.abs(end.row - start.row), Math.abs(end.column - start.column))
 }
 
 /**
@@ -242,7 +242,7 @@ fun kingTrajectory(start: Square, end: Square): List<Square> {
 }
 
 fun genKnightList(start: Square): List<Square> {
-    var res = mutableListOf<Square>()
+    val res = mutableListOf<Square>()
     var tmp = Square(start.column + 2, start.row + 1)
     if (tmp.inside()) res.add(tmp)
     tmp = Square(start.column + 2, start.row - 1)
@@ -261,6 +261,7 @@ fun genKnightList(start: Square): List<Square> {
     if (tmp.inside()) res.add(tmp)
     return res
 }
+
 /**
  * Сложная
  *
@@ -284,16 +285,35 @@ fun genKnightList(start: Square): List<Square> {
  * Пример: knightMoveNumber(Square(3, 1), Square(6, 3)) = 3.
  * Конь может последовательно пройти через клетки (5, 2) и (4, 4) к клетке (6, 3).
  */
-fun knightMoveNumber(start: Square, end: Square): Int {
+
+fun sqr(x: Int): Double = (x * x).toDouble()
+
+fun knightMoveNumber(start: Square, end: Square): Int = TODO()
+/*{
     if (!start.inside() || !end.inside()) throw IllegalArgumentException()
-    if (start == end) return 0
-    var tmp = genKnightList(start)
-    if (end in tmp) return 1
-    var res = 1
-    for (t in tmp)
-        res += knightMoveNumber(t, end)
+    var res = 0
+    var up = start
+    var down = end
+    var dif = 1000.0
+    if (start != end) {
+        while (dif != 0.0) {
+            var tmpS = genKnightList(up)
+            var tmpE = genKnightList(down)
+            if (end in tmpS) dif = 0.0
+            else
+                for (s in tmpS)
+                    for (e in tmpE) {
+                        if (Math.sqrt(sqr(e.column - s.column) + sqr(e.row - s.row)) < dif) {
+                            dif = Math.sqrt(sqr(e.column - s.column) + sqr(e.row - s.row))
+                            up = s
+                            down = e
+                        }
+                    }
+            res++
+        }
+    }
     return res
-}
+}*/
 
 /**
  * Очень сложная

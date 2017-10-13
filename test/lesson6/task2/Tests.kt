@@ -110,6 +110,7 @@ class Tests {
         assertEquals(6, kingMoveNumber(square("a8"), square("g8")))
         assertEquals(7, kingMoveNumber(square("a1"), square("h8")))
         assertEquals(4, kingMoveNumber(square("f7"), square("h3")))
+        assertEquals(2, kingMoveNumber(Square(2, 5), Square(4, 4)))
     }
 
     private fun List<Square>.assertKingTrajectory(start: Square, end: Square, length: Int) {
