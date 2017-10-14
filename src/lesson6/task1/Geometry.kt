@@ -1,4 +1,5 @@
 @file:Suppress("UNUSED_PARAMETER")
+
 package lesson6.task1
 
 import lesson1.task1.sqr
@@ -29,7 +30,8 @@ class Triangle private constructor(private val points: Set<Point>) {
 
     val c: Point get() = pointList[2]
 
-    constructor(a: Point, b: Point, c: Point): this(linkedSetOf(a, b, c))
+    constructor(a: Point, b: Point, c: Point) : this(linkedSetOf(a, b, c))
+
     /**
      * Пример: полупериметр
      */
@@ -140,7 +142,7 @@ class Line private constructor(val b: Double, val angle: Double) {
         assert(angle >= 0 && angle < Math.PI) { "Incorrect line angle: $angle" }
     }
 
-    constructor(point: Point, angle: Double): this(point.y * Math.cos(angle) - point.x * Math.sin(angle), angle)
+    constructor(point: Point, angle: Double) : this(point.y * Math.cos(angle) - point.x * Math.sin(angle), angle)
 
     /**
      * Средняя
@@ -173,7 +175,7 @@ class Line private constructor(val b: Double, val angle: Double) {
  * Построить прямую по отрезку
  */
 fun lineBySegment(s: Segment): Line {
-    val ang = (s.end.y - s.begin.y) / (s.end.x - s.begin.x)
+    val ang = if ((s.end.x - s.begin.x) != 0.0) (s.end.y - s.begin.y) / (s.end.x - s.begin.x) else 1.0
     return Line(s.begin, Math.atan(ang))
 }
 
@@ -190,16 +192,12 @@ fun lineByPoints(a: Point, b: Point): Line = lineBySegment(Segment(a, b))
  * Построить серединный перпендикуляр по отрезку или по двум точкам
  */
 fun bisectorByPoints(a: Point, b: Point): Line {
-    val tmp =
-            if (lineByPoints(a, b).angle >= 0 && lineByPoints(a, b).angle < Math.PI)
-                lineByPoints(a, b)
-            else
-                lineByPoints(b, a)
-    var ang = tmp.angle
-    if (ang + Math.PI / 2 >= Math.PI)
-        ang -= Math.PI / 2
-    else
-        ang += Math.PI / 2
+    val ang = if (b.x - a.x != 0.0)
+        if (lineByPoints(a, b).angle + Math.PI / 2 >= Math.PI)
+            lineByPoints(a, b).angle - Math.PI / 2
+        else
+            lineByPoints(a, b).angle + Math.PI / 2
+    else 0.0
     val mid = Point((a.x + b.x) / 2, (a.y + b.y) / 2)
     return Line(mid, ang)
 }
@@ -210,7 +208,17 @@ fun bisectorByPoints(a: Point, b: Point): Line {
  * Задан список из n окружностей на плоскости. Найти пару наименее удалённых из них.
  * Если в списке менее двух окружностей, бросить IllegalArgumentException
  */
-fun findNearestCirclePair(vararg circles: Circle): Pair<Circle, Circle> = TODO()
+fun findNearestCirclePair(vararg circles: Circle): Pair<Circle, Circle> {
+    if (circles.count() < 2) throw IllegalArgumentException()
+    var res = Pair<Circle, Circle>(circles[0], circles[1])
+    for (c1 in circles)
+        for (c2 in circles) {
+            if (c1 == c2) continue
+            if (res.first.distance(res.second) > c1.distance(c2))
+                res = Pair(c1, c2)
+        }
+    return res
+}
 
 /**
  * Сложная
@@ -221,7 +229,26 @@ fun findNearestCirclePair(vararg circles: Circle): Pair<Circle, Circle> = TODO()
  * (построить окружность по трём точкам, или
  * построить окружность, описанную вокруг треугольника - эквивалентная задача).
  */
-fun circleByThreePoints(a: Point, b: Point, c: Point): Circle = TODO()
+fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
+    val p11: Point
+    val p12: Point
+    val p21: Point
+    val p22: Point
+    if ((b.y - a.y) / (b.x - a.x) >= 0) {
+        p11 = a; p12 = b
+    } else {
+        p11 = b; p12 = c
+    }
+    if (p11 == a) {
+        p21 = b; p22 = c
+    } else {
+        p21 = c; p22 = a
+    }
+    val s1 = bisectorByPoints(p11, p12)
+    val s2 = bisectorByPoints(p21, p22)
+    val mid = s1.crossPoint(s2)
+    return Circle(mid, mid.distance(a))
+}
 
 /**
  * Очень сложная
@@ -234,5 +261,23 @@ fun circleByThreePoints(a: Point, b: Point, c: Point): Circle = TODO()
  * три точки данного множества, либо иметь своим диаметром отрезок,
  * соединяющий две самые удалённые точки в данном множестве.
  */
-fun minContainingCircle(vararg points: Point): Circle = TODO()
+fun minContainingCircle(vararg points: Point): Circle {
+    if (points.count() == 0) throw IllegalArgumentException()
+    if (points.count() == 1) return Circle(points[0], 0.0)
+    var res = Circle(Point(0.0, 0.0), 0.0)
+//    val min = Point(points.minBy { it.x }?.x!!, points.minBy { it.y }?.y!!)
+//    val max = Point(points.maxBy { it.x }?.x!!, points.maxBy { it.y }?.y!!)
+//    val mid = Point((min.x+max.x)/2,(min.y+max.y)/2)
+//    val rad = mid.distance(min)
+//    return Circle(mid,rad)
+    for (a in points)
+        for (b in points.filter { it != a })
+            for (c in points.filter { it != a && it != b }) {
+                val tmp = circleByThreePoints(a, b, c)
+                for (p in points.filter { it != a && it != b && it != c })
+                    if (!tmp.contains(p)) break
+                res = tmp
+            }
+    return res
+}
 
