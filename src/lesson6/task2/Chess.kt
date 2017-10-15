@@ -288,7 +288,30 @@ fun genKnightList(start: Square): List<Square> {
 
 fun sqr(x: Int): Double = (x * x).toDouble()
 
-fun knightMoveNumber(start: Square, end: Square): Int = TODO()
+fun knightMoveNumber(start: Square, end: Square): Int {
+    var path = mutableListOf<Square>(start)
+    var res = 0
+    while (true) {
+        if (end in path) break
+        path = li(end, path)
+        res++
+    }
+    return res
+}
+
+fun li(end: Square, path: MutableList<Square>): MutableList<Square> {
+    val del = listOf<Pair<Int, Int>>(Pair(2, 1), Pair(2, -1), Pair(-2, 1), Pair(-2, -1),
+            Pair(1, 2), Pair(1, -2), Pair(-1, 2), Pair(-1, -2))
+    val res = mutableListOf<Square>()
+    path.forEach { p -> res.add(p) }
+    for (p in path)
+        for (d in del) {
+            val tmp = Square(p.column + d.first, p.row + d.second)
+            if (tmp !in res && tmp.inside()) res.add(tmp)
+        }
+    return res
+}
+
 /*{
     if (!start.inside() || !end.inside()) throw IllegalArgumentException()
     var res = 0
@@ -335,4 +358,40 @@ fun knightMoveNumber(start: Square, end: Square): Int = TODO()
  *
  * Если возможно несколько вариантов самой быстрой траектории, вернуть любой из них.
  */
-fun knightTrajectory(start: Square, end: Square): List<Square> = TODO()
+fun knightTrajectory(start: Square, end: Square): List<Square> {
+    val del = listOf<Pair<Int, Int>>(Pair(2, 1), Pair(2, -1), Pair(-2, 1), Pair(-2, -1),
+            Pair(1, 2), Pair(1, -2), Pair(-1, 2), Pair(-1, -2))
+    val desk = arrayOf(
+            arrayOf(-1, -1, -1, -1, -1, -1, -1, -1),
+            arrayOf(-1, -1, -1, -1, -1, -1, -1, -1),
+            arrayOf(-1, -1, -1, -1, -1, -1, -1, -1),
+            arrayOf(-1, -1, -1, -1, -1, -1, -1, -1),
+            arrayOf(-1, -1, -1, -1, -1, -1, -1, -1),
+            arrayOf(-1, -1, -1, -1, -1, -1, -1, -1),
+            arrayOf(-1, -1, -1, -1, -1, -1, -1, -1),
+            arrayOf(-1, -1, -1, -1, -1, -1, -1, -1)
+    )
+    var path = mutableListOf<Square>(start)
+    var res = 0
+    while (true) {
+        path.forEach {
+            if (desk[it.column - 1][it.row - 1] == -1 || desk[it.column - 1][it.row - 1] > res)
+                desk[it.column - 1][it.row - 1] = res
+        }
+        if (end in path) break
+        path = li(end, path)
+        res++
+    }
+    val smallest = mutableListOf<Square>(end)
+    var point = end
+    while (point != start) {
+        for (d in del) {
+            val tmp = Square(point.column + d.first, point.row + d.second)
+            if (!tmp.inside()) continue
+            if (desk[tmp.column - 1][tmp.row - 1] == desk[point.column - 1][point.row - 1] - 1) {
+                smallest.add(tmp); point = tmp; break
+            }
+        }
+    }
+    return smallest.reversed()
+}
