@@ -289,6 +289,7 @@ fun genKnightList(start: Square): List<Square> {
 fun sqr(x: Int): Double = (x * x).toDouble()
 
 fun knightMoveNumber(start: Square, end: Square): Int {
+    if (!start.inside() || !end.inside()) throw IllegalArgumentException()
     var path = mutableListOf<Square>(start)
     var res = 0
     while (true) {
