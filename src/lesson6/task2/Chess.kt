@@ -127,7 +127,7 @@ fun bishopMoveNumber(start: Square, end: Square): Int = when {
     (!start.inside() || !end.inside()) -> throw IllegalArgumentException()
     ((start.row + start.column) % 2 != (end.row + end.column) % 2) -> -1
     (start == end) -> 0
-    (end.row - start.row == end.column - start.column) -> 1
+    (Math.abs(end.row - start.row) == Math.abs(end.column - start.column)) -> 1
     else -> 2
 }
 
@@ -153,10 +153,10 @@ fun bishopTrajectory(start: Square, end: Square): List<Square> {
     if (bishopMoveNumber(start, end) == -1) return listOf()
     if (bishopMoveNumber(start, end) == 0) return listOf<Square>(start)
     val res = mutableListOf<Square>(start)
-    if (Math.abs(end.column - start.column) == Math.abs(end.row - start.row)) res.add(end)
+    if (bishopMoveNumber(start, end) == 1) res.add(end)
     else {
-        val tmp = if ((end.row - start.row) % 2 == 1) (end.row - start.row) / 2 + 1
-        else (end.row - start.row) / 2
+        val tmp = if (Math.abs(end.row - start.row) % 2 == 1) Math.abs(end.row - start.row) / 2 + 1
+        else Math.abs(end.row - start.row) / 2
         val x = if (start.column + tmp in 1..8) start.column + tmp else start.column - tmp
         val y = if (start.row + tmp in 1..8) start.row + tmp else start.row - tmp
         res.add(Square(x, y))
