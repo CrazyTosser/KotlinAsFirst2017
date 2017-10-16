@@ -65,16 +65,17 @@ fun main(args: Array<String>) {
  * День и месяц всегда представлять двумя цифрами, например: 03.04.2011.
  * При неверном формате входной строки вернуть пустую строку
  */
+val tes = listOf("января", "февраля", "марта", "апреля", "мая",
+        "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря")
+
 fun dateStrToDigit(str: String): String {
     val wrL = str.split(" ").toMutableList()
     if (wrL.count() != 3) return ""
-    val tes = listOf<String>("января", "февраля", "марта", "апреля", "мая",
-            "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря")
-        val valid = tes.indexOf(wrL[1])
-        if (valid == -1) return ""
-        wrL[0] = twoDigitStr(wrL[0].toInt())
-        wrL[1] = twoDigitStr(valid + 1)
-        return wrL.joinToString(separator = ".")
+    val valid = tes.indexOf(wrL[1])
+    if (valid == -1) return ""
+    wrL[0] = twoDigitStr(wrL[0].toInt())
+    wrL[1] = twoDigitStr(valid + 1)
+    return wrL.joinToString(separator = ".")
 }
 
 /**
@@ -94,12 +95,10 @@ fun dateDigitToStr(digital: String): String {
     } catch (ex: NumberFormatException) {
         return ""
     }
-    val tes = listOf<String>("января", "февраля", "марта", "апреля", "мая",
-            "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря")
-        if (wrL.count() != 3) return ""
-        wrL[0] = if (wrL[0][0] == '0') wrL[0].substring(1) else wrL[0]
+    if (wrL.count() != 3) return ""
+    wrL[0] = if (wrL[0].toInt() in 1..9) wrL[0].substring(1) else wrL[0]
     wrL[1] = tes[mon]
-        return wrL.joinToString(separator = " ")
+    return wrL.joinToString(separator = " ")
 }
 
 /**
@@ -151,13 +150,13 @@ fun bestHighJump(jumps: String): Int {
     if (!jumps.matches(Regex("""^[ \d\-%\+]*$"""))) return -1
     val wr = jumps.split(' ')
     var res = -1
-        for (i in 0 until wr.count() step 2) {
-            if (wr[i + 1].contains('+')) {
-                val tmp = wr[i].toInt()
-                if (res < tmp)
-                    res = tmp
-            }
+    for (i in 0 until wr.count() step 2) {
+        if (wr[i + 1].contains('+')) {
+            val tmp = wr[i].toInt()
+            if (res < tmp)
+                res = tmp
         }
+    }
     return res
 }
 
@@ -233,6 +232,7 @@ fun mostExpensive(description: String): String {
     }
     return res.maxBy { it.second }!!.first
 }
+
 /**
  * Сложная
  *
