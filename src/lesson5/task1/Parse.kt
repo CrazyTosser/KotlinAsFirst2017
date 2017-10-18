@@ -181,7 +181,7 @@ fun plusMinus(expression: String): Int {
     }
     var res = wr[0].toInt()
     for (s in 1 until wr.count() step 2) {
-        if (wr[s].equals("+")) {
+        if (wr[s] == "+") {
             res += wr[s + 1].toInt()
         } else {
             res -= wr[s + 1].toInt()
@@ -226,11 +226,11 @@ fun mostExpensive(description: String): String {
     if (description.isEmpty()) return ""
     val res = mutableListOf<Pair<String, Double>>()
     val spl = description.split(";")
-    for (m in spl) {
-        val tmp = m.trim().split(" ")
-        res.add(Pair(tmp[0], tmp[1].toDouble()))
-    }
-    return res.maxBy { it.second }!!.first
+    spl
+            .map { it.trim().split(" ") }
+            .mapTo(res) { Pair(it[0], it[1].toDouble()) }
+    return if (res.maxBy { it.second }?.first == null) ""
+    else res.maxBy { it.second }!!.first
 }
 
 /**
@@ -245,7 +245,7 @@ fun mostExpensive(description: String): String {
  * Вернуть -1, если roman не является корректным римским числом
  */
 fun fromRoman(roman: String): Int {
-    if (roman.length == 0) return -1
+    if (roman.isEmpty()) return -1
     val rom = mutableListOf<Pair<Int, String>>(Pair(1000, "M"), Pair(900, "CM"), Pair(500, "D"), Pair(400, "CD"),
             Pair(100, "C"), Pair(90, "XC"), Pair(50, "L"), Pair(40, "XL"), Pair(10, "X"), Pair(9, "IX"),
             Pair(5, "V"), Pair(4, "IV"), Pair(1, "I"))
@@ -256,8 +256,9 @@ fun fromRoman(roman: String): Int {
             if (roman.substring(tmp, tmp + 1) == rom[0].second) {
                 res += rom[0].first
                 tmp++
-            } else
+            } else {
                 rom.removeAt(0)
+            }
         } else {
             if (roman.length - tmp < 2) {
                 rom.removeAt(0); continue
@@ -265,8 +266,9 @@ fun fromRoman(roman: String): Int {
             if (roman.substring(tmp, tmp + 2) == rom[0].second) {
                 res += rom[0].first
                 tmp += 2
-            } else
+            } else {
                 rom.removeAt(0)
+            }
         }
         if (tmp == roman.length) break
     }

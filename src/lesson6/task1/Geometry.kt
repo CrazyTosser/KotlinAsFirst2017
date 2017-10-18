@@ -74,18 +74,16 @@ data class Circle(val center: Point, val radius: Double) {
      * расстояние между их центрами минус сумма их радиусов.
      * Расстояние между пересекающимися окружностями считать равным 0.0.
      */
-    fun distance(other: Circle): Double {
-        val dal = this.center.distance(other.center) - (this.radius + other.radius)
-        if (dal < 0) return 0.0
-        else return dal
-    }
+    fun distance(other: Circle): Double =
+            Math.max(this.center.distance(other.center) - (this.radius + other.radius), 0.0)
 
     /**
      * Тривиальная
      *
      * Вернуть true, если и только если окружность содержит данную точку НА себе или ВНУТРИ себя
      */
-    fun contains(p: Point): Boolean = Math.sqrt(sqr(p.x - center.x) + sqr(p.y - center.y)) <= radius
+    fun contains(p: Point): Boolean =
+            Math.sqrt(sqr(p.x - center.x) + sqr(p.y - center.y)) <= radius
 }
 
 /**
@@ -108,12 +106,13 @@ data class Segment(val begin: Point, val end: Point) {
 fun diameter(vararg points: Point): Segment {
     if (points.count() < 2) throw IllegalArgumentException()
     var max = 0.0
-    var res: Pair<Point, Point> = Pair(Point(0.0, 0.0), Point(0.0, 0.0))
+    var res = Pair(Point(0.0, 0.0), Point(0.0, 0.0))
     for (i in points)
         for (j in points) {
             if (i == j) continue
             if (i.distance(j) > max) {
-                res = Pair(i, j); max = i.distance(j)
+                res = Pair(i, j)
+                max = i.distance(j)
             }
         }
     return Segment(res.first, res.second)
@@ -175,8 +174,11 @@ class Line private constructor(val b: Double, val angle: Double) {
  * Построить прямую по отрезку
  */
 fun lineBySegment(s: Segment): Line {
-    val ang = if ((s.end.x - s.begin.x) != 0.0) (s.end.y - s.begin.y) / (s.end.x - s.begin.x) else 1.0
-    return Line(s.begin, Math.atan(ang))
+    var ang = Math.atan((s.end.y - s.begin.y) / (s.end.x - s.begin.x))
+    if (ang == Double.NEGATIVE_INFINITY || ang == Double.POSITIVE_INFINITY)
+        ang = 1.0
+    if (ang < 0) ang += Math.PI
+    return Line(s.begin, ang)
 }
 
 /**
