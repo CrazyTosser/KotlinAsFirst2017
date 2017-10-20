@@ -2,6 +2,13 @@
 
 package lesson6.task2
 
+
+val delKing = listOf(Pair(1, 1), Pair(1, 0), Pair(1, -1), Pair(0, 1),
+        Pair(0, -1), Pair(-1, 1), Pair(-1, 0), Pair(-1, -1))
+
+val delKnight = listOf(Pair(2, 1), Pair(2, -1), Pair(-2, 1), Pair(-2, -1),
+        Pair(1, 2), Pair(1, -2), Pair(-1, 2), Pair(-1, -2))
+
 /**
  * Клетка шахматной доски. Шахматная доска квадратная и имеет 8 х 8 клеток.
  * Поэтому, обе координаты клетки (горизонталь row, вертикаль column) могут находиться в пределах от 1 до 8.
@@ -23,8 +30,8 @@ data class Square(val column: Int, val row: Int) {
      * Для клетки не в пределах доски вернуть пустую строку
      */
     fun notation(): String {
-        if (this.column + 96 < 97 || this.column + 96 > 104 || this.row < 1 || this.row > 8) return ""
-        return "${(this.column + 96).toChar()}${this.row}"
+        if (this.column + '`'.toInt() !in 'a'.toInt()..'h'.toInt() || this.row !in 1..8) return ""
+        return "${(this.column + '`'.toInt()).toChar()}${this.row}"
     }
 }
 
@@ -37,9 +44,9 @@ data class Square(val column: Int, val row: Int) {
  */
 fun square(notation: String): Square {
     if (notation.length != 2) throw IllegalArgumentException()
-    val col = notation[0].toInt() - 96
-    val row = notation[1].toInt() - 48
-    if (col < 1 || col > 104 || row < 1 || row > 8) throw IllegalArgumentException()
+    val col = notation[0].toInt() - '`'.toInt()
+    val row = notation[1].toInt() - '0'.toInt()
+    if (col !in 1..8 || row !in 1..8) throw IllegalArgumentException()
     return Square(col, row)
 }
 
@@ -66,10 +73,12 @@ fun square(notation: String): Square {
  * Пример: rookMoveNumber(Square(3, 1), Square(6, 3)) = 2
  * Ладья может пройти через клетку (3, 3) или через клетку (6, 1) к клетке (6, 3).
  */
-fun rookMoveNumber(start: Square, end: Square): Int =
-        if (!start.inside() || !end.inside()) throw IllegalArgumentException()
-        else if (start.row == end.row && start.column == end.column) 0
-        else if (start.row == end.row || start.column == end.column) 1 else 2
+fun rookMoveNumber(start: Square, end: Square): Int = when {
+    (!start.inside() || !end.inside()) -> throw IllegalArgumentException()
+    (start.row == end.row && start.column == end.column) -> 0
+    (start.row == end.row || start.column == end.column) -> 1
+    else -> 2
+}
 
 /**
  * Средняя
@@ -89,7 +98,7 @@ fun rookTrajectory(start: Square, end: Square): List<Square> {
     val res = mutableListOf<Square>(start)
     var y = start.row
     var x = start.column
-    if (x < end.column || x > end.column) {
+    if (x != end.column) {
         x = end.column
         res.add(Square(x, y))
     }
@@ -155,10 +164,16 @@ fun bishopTrajectory(start: Square, end: Square): List<Square> {
     val res = mutableListOf<Square>(start)
     if (bishopMoveNumber(start, end) == 1) res.add(end)
     else {
-        val tmp = if (Math.abs(end.row - start.row) % 2 == 1) Math.abs(end.row - start.row) / 2 + 1
-        else Math.abs(end.row - start.row) / 2
-        val x = if (start.column + tmp in 1..8) start.column + tmp else start.column - tmp
-        val y = if (start.row + tmp in 1..8) start.row + tmp else start.row - tmp
+        var a = start.row - start.column
+        var b = end.column + end.row
+        var y = (a + b) / 2
+        var x = y - a
+        if (!Square(x, y).inside()) {
+            a = start.row + start.column
+            b = end.row - end.column
+            y = (a + b) / 2
+            x = y - b
+        }
         res.add(Square(x, y))
         res.add(end)
     }
@@ -187,13 +202,11 @@ fun bishopTrajectory(start: Square, end: Square): List<Square> {
  */
 fun kingMoveNumber(start: Square, end: Square): Int {
     if (!start.inside() || !end.inside()) throw IllegalArgumentException()
-    val del = listOf<Pair<Int, Int>>(Pair(1, 1), Pair(1, 0), Pair(1, -1), Pair(0, 1),
-            Pair(0, -1), Pair(-1, 1), Pair(-1, 0), Pair(-1, -1))
     var path = mutableListOf<Square>(start)
     var res = 0
     while (true) {
         if (end in path) break
-        path = li(end, path, del)
+        path = li(end, path, delKing)
         res++
     }
     return res
@@ -213,11 +226,7 @@ fun kingMoveNumber(start: Square, end: Square): Int {
  *          kingTrajectory(Square(3, 5), Square(6, 2)) = listOf(Square(3, 5), Square(4, 4), Square(5, 3), Square(6, 2))
  * Если возможно несколько вариантов самой быстрой траектории, вернуть любой из них.
  */
-fun kingTrajectory(start: Square, end: Square): List<Square> {
-    val del = listOf<Pair<Int, Int>>(Pair(1, 1), Pair(1, 0), Pair(1, -1), Pair(0, 1),
-            Pair(0, -1), Pair(-1, 1), Pair(-1, 0), Pair(-1, -1))
-    return liPath(start, end, del).reversed()
-}
+fun kingTrajectory(start: Square, end: Square): List<Square> = liPath(start, end, delKing).reversed()
 
 
 /**
@@ -248,13 +257,11 @@ fun sqr(x: Int): Double = (x * x).toDouble()
 
 fun knightMoveNumber(start: Square, end: Square): Int {
     if (!start.inside() || !end.inside()) throw IllegalArgumentException()
-    val del = listOf<Pair<Int, Int>>(Pair(2, 1), Pair(2, -1), Pair(-2, 1), Pair(-2, -1),
-            Pair(1, 2), Pair(1, -2), Pair(-1, 2), Pair(-1, -2))
     var path = mutableListOf<Square>(start)
     var res = 0
     while (true) {
         if (end in path) break
-        path = li(end, path, del)
+        path = li(end, path, delKnight)
         res++
     }
     return res
@@ -262,12 +269,13 @@ fun knightMoveNumber(start: Square, end: Square): Int {
 
 fun li(end: Square, path: MutableList<Square>, del: List<Pair<Int, Int>>): MutableList<Square> {
     val res = mutableListOf<Square>()
-    path.forEach { p -> res.add(p) }
-    for (p in path)
+    res.addAll(path)
+    for (p in path) {
         for (d in del) {
             val tmp = Square(p.column + d.first, p.row + d.second)
             if (tmp !in res && tmp.inside()) res.add(tmp)
         }
+    }
     return res
 }
 
@@ -327,8 +335,4 @@ fun liPath(start: Square, end: Square, del: List<Pair<Int, Int>>): List<Square> 
  *
  * Если возможно несколько вариантов самой быстрой траектории, вернуть любой из них.
  */
-fun knightTrajectory(start: Square, end: Square): List<Square> {
-    val del = listOf<Pair<Int, Int>>(Pair(2, 1), Pair(2, -1), Pair(-2, 1), Pair(-2, -1),
-            Pair(1, 2), Pair(1, -2), Pair(-1, 2), Pair(-1, -2))
-    return liPath(start, end, del).reversed()
-}
+fun knightTrajectory(start: Square, end: Square): List<Square> = liPath(start, end, delKnight).reversed()

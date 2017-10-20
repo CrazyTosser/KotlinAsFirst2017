@@ -96,7 +96,7 @@ fun dateDigitToStr(digital: String): String {
         return ""
     }
     if (wrL.count() != 3) return ""
-    wrL[0] = if (wrL[0].toInt() in 1..9) wrL[0].substring(1) else wrL[0]
+    wrL[0] = wrL[0].toInt().toString()
     wrL[1] = tes[mon]
     return wrL.joinToString(separator = " ")
 }
@@ -174,9 +174,9 @@ fun plusMinus(expression: String): Int {
     var mg = 1
     for (s in wr) {
         if (s.matches(Regex("""(\d+)+"""))) {
-            mg++; if (mg > 2 || mg < 0) throw IllegalArgumentException()
+            mg++; if (mg !in 0..2) throw IllegalArgumentException()
         } else if (s.matches(Regex("""[\+-]+"""))) {
-            mg--; if (mg > 2 || mg < 0) throw IllegalArgumentException()
+            mg--; if (mg !in 0..2) throw IllegalArgumentException()
         } else throw IllegalArgumentException()
     }
     var res = wr[0].toInt()
@@ -246,28 +246,29 @@ fun mostExpensive(description: String): String {
  */
 fun fromRoman(roman: String): Int {
     if (roman.isEmpty()) return -1
-    val rom = mutableListOf<Pair<Int, String>>(Pair(1000, "M"), Pair(900, "CM"), Pair(500, "D"), Pair(400, "CD"),
+    val rom = listOf(Pair(1000, "M"), Pair(900, "CM"), Pair(500, "D"), Pair(400, "CD"),
             Pair(100, "C"), Pair(90, "XC"), Pair(50, "L"), Pair(40, "XL"), Pair(10, "X"), Pair(9, "IX"),
             Pair(5, "V"), Pair(4, "IV"), Pair(1, "I"))
     var res = 0
     var tmp = 0
-    while (rom.count() != 0) {
-        if (rom[0].second.length == 1) {
-            if (roman.substring(tmp, tmp + 1) == rom[0].second) {
-                res += rom[0].first
+    var c = 0
+    while (rom.count() != c) {
+        if (rom[c].second.length == 1) {
+            if (roman.substring(tmp, tmp + 1) == rom[c].second) {
+                res += rom[c].first
                 tmp++
             } else {
-                rom.removeAt(0)
+                c++
             }
         } else {
             if (roman.length - tmp < 2) {
-                rom.removeAt(0); continue
+                c++; continue
             }
-            if (roman.substring(tmp, tmp + 2) == rom[0].second) {
-                res += rom[0].first
+            if (roman.substring(tmp, tmp + 2) == rom[c].second) {
+                res += rom[c].first
                 tmp += 2
             } else {
-                rom.removeAt(0)
+                c++
             }
         }
         if (tmp == roman.length) break
