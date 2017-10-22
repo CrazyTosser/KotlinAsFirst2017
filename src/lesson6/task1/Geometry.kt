@@ -179,6 +179,7 @@ fun lineBySegment(s: Segment): Line {
     /*if (ang == Double.NEGATIVE_INFINITY || ang == Double.POSITIVE_INFINITY)
         ang = 1.0*/
     if (ang < 0) ang += Math.PI
+    if (ang > Math.PI) ang -= Math.PI
     return Line(s.begin, ang)
 }
 

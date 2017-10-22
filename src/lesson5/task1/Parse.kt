@@ -181,10 +181,11 @@ fun plusMinus(expression: String): Int {
     }
     var res = wr[0].toInt()
     for (s in 1 until wr.count() step 2) {
+        val tmp = wr[s + 1].toInt()
         if (wr[s] == "+") {
-            res += wr[s + 1].toInt()
+            res += tmp
         } else {
-            res -= wr[s + 1].toInt()
+            res -= tmp
         }
     }
     return res
@@ -229,8 +230,7 @@ fun mostExpensive(description: String): String {
     spl
             .map { it.trim().split(" ") }
             .mapTo(res) { Pair(it[0], it[1].toDouble()) }
-    return if (res.maxBy { it.second }?.first == null) ""
-    else res.maxBy { it.second }!!.first
+    return res.maxBy { it.second }!!.first
 }
 
 /**
@@ -250,30 +250,30 @@ fun fromRoman(roman: String): Int {
             Pair(100, "C"), Pair(90, "XC"), Pair(50, "L"), Pair(40, "XL"), Pair(10, "X"), Pair(9, "IX"),
             Pair(5, "V"), Pair(4, "IV"), Pair(1, "I"))
     var res = 0
-    var tmp = 0
-    var c = 0
-    while (rom.count() != c) {
-        if (rom[c].second.length == 1) {
-            if (roman.substring(tmp, tmp + 1) == rom[c].second) {
-                res += rom[c].first
-                tmp++
+    var index = 0
+    var i = 0
+    while (rom.count() != i) {
+        if (rom[i].second.length == 1) {
+            if (roman.substring(index, index + 1) == rom[i].second) {
+                res += rom[i].first
+                index++
             } else {
-                c++
+                i++
             }
         } else {
-            if (roman.length - tmp < 2) {
-                c++; continue
+            if (roman.length - index < 2) {
+                i++; continue
             }
-            if (roman.substring(tmp, tmp + 2) == rom[c].second) {
-                res += rom[c].first
-                tmp += 2
+            if (roman.substring(index, index + 2) == rom[i].second) {
+                res += rom[i].first
+                index += 2
             } else {
-                c++
+                i++
             }
         }
-        if (tmp == roman.length) break
+        if (index == roman.length) break
     }
-    return if (tmp == roman.length) res else -1
+    return if (index == roman.length) res else -1
 }
 
 /**

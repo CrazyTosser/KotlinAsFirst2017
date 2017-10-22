@@ -30,7 +30,7 @@ data class Square(val column: Int, val row: Int) {
      * Для клетки не в пределах доски вернуть пустую строку
      */
     fun notation(): String {
-        if (this.column + '`'.toInt() !in 'a'.toInt()..'h'.toInt() || this.row !in 1..8) return ""
+        if (this.column - 1 + 'a'.toInt() !in 'a'.toInt()..'h'.toInt() || this.row !in 1..8) return ""
         return "${(this.column + '`'.toInt()).toChar()}${this.row}"
     }
 }
@@ -44,7 +44,7 @@ data class Square(val column: Int, val row: Int) {
  */
 fun square(notation: String): Square {
     if (notation.length != 2) throw IllegalArgumentException()
-    val col = notation[0].toInt() - '`'.toInt()
+    val col = notation[0].toInt() + 1 - 'a'.toInt()
     val row = notation[1].toInt() - '0'.toInt()
     if (col !in 1..8 || row !in 1..8) throw IllegalArgumentException()
     return Square(col, row)
@@ -268,8 +268,7 @@ fun knightMoveNumber(start: Square, end: Square): Int {
 }
 
 fun li(end: Square, path: MutableList<Square>, del: List<Pair<Int, Int>>): MutableList<Square> {
-    val res = mutableListOf<Square>()
-    res.addAll(path)
+    val res = path.toMutableList()
     for (p in path) {
         for (d in del) {
             val tmp = Square(p.column + d.first, p.row + d.second)
