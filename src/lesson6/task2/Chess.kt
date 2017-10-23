@@ -31,7 +31,7 @@ data class Square(val column: Int, val row: Int) {
      */
     fun notation(): String {
         if (this.column - 1 + 'a'.toInt() !in 'a'.toInt()..'h'.toInt() || this.row !in 1..8) return ""
-        return "${(this.column + '`'.toInt()).toChar()}${this.row}"
+        return "${(this.column - 1 + 'a'.toInt()).toChar()}${this.row}"
     }
 }
 
