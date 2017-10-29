@@ -4,8 +4,7 @@ package lesson4.task1
 
 import lesson1.task1.discriminant
 import lesson1.task1.sqr
-import java.lang.Math.pow
-import java.lang.Math.sqrt
+import java.lang.Math.*
 
 /**
  * Пример
@@ -228,7 +227,7 @@ fun accumulate(list: MutableList<Double>): MutableList<Double> {
 fun factorize(n: Int): List<Int> {
     var workN = n
     val res: MutableList<Int> = mutableListOf()
-    for (i in 2..sqrt(n.toDouble()).toInt() - 1)
+    for (i in 2..round(sqrt(n.toDouble())).toInt())
         while (workN % i == 0) {
             res.add(i)
             workN /= i

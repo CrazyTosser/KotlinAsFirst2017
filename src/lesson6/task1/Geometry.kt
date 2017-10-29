@@ -196,12 +196,11 @@ fun lineByPoints(a: Point, b: Point): Line = lineBySegment(Segment(a, b))
  * Построить серединный перпендикуляр по отрезку или по двум точкам
  */
 fun bisectorByPoints(a: Point, b: Point): Line {
-    val ang = if (b.x - a.x != 0.0)
-        if (lineByPoints(a, b).angle + Math.PI / 2 >= Math.PI)
-            lineByPoints(a, b).angle - Math.PI / 2
-        else
-            lineByPoints(a, b).angle + Math.PI / 2
-    else 0.0
+    val ang =
+            if (lineByPoints(a, b).angle + Math.PI / 2 >= Math.PI)
+                lineByPoints(a, b).angle - Math.PI / 2
+            else
+                lineByPoints(a, b).angle + Math.PI / 2
     val mid = Point((a.x + b.x) / 2, (a.y + b.y) / 2)
     return Line(mid, ang)
 }
@@ -234,23 +233,13 @@ fun findNearestCirclePair(vararg circles: Circle): Pair<Circle, Circle> {
  * построить окружность, описанную вокруг треугольника - эквивалентная задача).
  */
 fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
-    val p11: Point
-    val p12: Point
-    val p21: Point
-    val p22: Point
-    if ((b.y - a.y) / (b.x - a.x) >= 0) {
-        p11 = a; p12 = b
-    } else {
-        p11 = b; p12 = c
-    }
-    if (p11 == a) {
-        p21 = b; p22 = c
-    } else {
-        p21 = c; p22 = a
-    }
-    val s1 = bisectorByPoints(p11, p12)
-    val s2 = bisectorByPoints(p21, p22)
+    val s1 = bisectorByPoints(a, b)
+    val s2 = bisectorByPoints(b, c)
     val mid = s1.crossPoint(s2)
+//    val s3 = bisectorByPoints(a, c)
+//    if (s1.crossPoint(s3) != mid || s2.crossPoint(s3) != mid) {
+//
+//    }
     return Circle(mid, mid.distance(a))
 }
 
