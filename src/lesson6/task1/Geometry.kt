@@ -3,6 +3,7 @@
 package lesson6.task1
 
 import lesson1.task1.sqr
+import java.lang.Math.abs
 
 /**
  * Точка на плоскости
@@ -223,6 +224,20 @@ fun findNearestCirclePair(vararg circles: Circle): Pair<Circle, Circle> {
     return res
 }
 
+fun isNormal(a: Point, b: Point, c: Point): Boolean {
+    val yDeltaA = b.y - a.y
+    val xDeltaA = b.x - a.x
+    val yDeltaB = c.y - b.y
+    val xDeltaB = c.x - b.x
+    return when {
+        abs(xDeltaA) <= 0.000000001 && abs(yDeltaB) <= 0.000000001 -> false
+        abs(yDeltaA) <= 0.0000001 -> true
+        abs(yDeltaB) <= 0.0000001 -> true
+        abs(xDeltaA) <= 0.000000001 -> true
+        else -> abs(xDeltaB) <= 0.000000001
+    }
+}
+
 /**
  * Сложная
  *
@@ -233,13 +248,31 @@ fun findNearestCirclePair(vararg circles: Circle): Pair<Circle, Circle> {
  * построить окружность, описанную вокруг треугольника - эквивалентная задача).
  */
 fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
-    val s1 = bisectorByPoints(a, b)
-    val s2 = bisectorByPoints(b, c)
-    val mid = s1.crossPoint(s2)
-//    val s3 = bisectorByPoints(a, c)
-//    if (s1.crossPoint(s3) != mid || s2.crossPoint(s3) != mid) {
-//
-//    }
+    val pointArr =
+            when {
+                !isNormal(a, b, c) -> listOf(a, b, c)
+                !isNormal(a, c, b) -> listOf(a, c, b)
+                !isNormal(b, a, c) -> listOf(b, a, c)
+                !isNormal(b, c, a) -> listOf(b, c, a)
+                !isNormal(c, b, a) -> listOf(c, b, a)
+                !isNormal(c, a, b) -> listOf(c, a, b)
+                else -> listOf()
+            }
+    val yDeltaA = (pointArr[1].y - pointArr[0].y)
+    val yDeltaB = (pointArr[2].y - pointArr[1].y)
+    val xDeltaA = (pointArr[1].x - pointArr[0].x)
+    val xDeltaB = (pointArr[2].x - pointArr[1].x)
+    val mid: Point
+    if (Math.abs(xDeltaA) <= 1e-5 && Math.abs(yDeltaB) <= 1e-5) {
+        mid = Point(0.5 * (pointArr[1].x + pointArr[2].x), 0.5 * (pointArr[0].y + pointArr[1].y))
+    } else {
+        val aSlope = yDeltaA / xDeltaA
+        val bSlope = yDeltaB / xDeltaB
+        val midX =
+                (aSlope * bSlope * (pointArr[0].y - pointArr[2].y) + bSlope * (pointArr[0].x + pointArr[1].x) - aSlope * (pointArr[1].x + pointArr[2].x)) / (2 * (bSlope - aSlope))
+        val midY = -1 * (midX - (pointArr[0].x + pointArr[1].x) / 2) / aSlope + (pointArr[0].y + pointArr[1].y) / 2
+        mid = Point(midX, midY)
+    }
     return Circle(mid, mid.distance(a))
 }
 
