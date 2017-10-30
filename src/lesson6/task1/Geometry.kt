@@ -256,7 +256,7 @@ fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
                 !isNormal(b, c, a) -> listOf(b, c, a)
                 !isNormal(c, b, a) -> listOf(c, b, a)
                 !isNormal(c, a, b) -> listOf(c, a, b)
-                else -> listOf()
+                else -> return Circle(Point(0.0, 0.0), 0.0)
             }
     val yDeltaA = (pointArr[1].y - pointArr[0].y)
     val yDeltaB = (pointArr[2].y - pointArr[1].y)
