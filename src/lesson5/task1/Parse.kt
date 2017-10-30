@@ -88,7 +88,7 @@ fun dateStrToDigit(str: String): String {
 fun dateDigitToStr(digital: String): String {
     val wrL = digital.split(".").toMutableList()
     if (wrL.count() != 3) return ""
-    var mon = 0
+    val mon: Int
     try {
         mon = wrL[1].toInt() - 1
         if (mon !in 0..11) return ""
@@ -224,7 +224,7 @@ fun firstDuplicateIndex(str: String): Int {
  * Все цены должны быть положительными
  */
 fun mostExpensive(description: String): String {
-    val matchResult = Regex("""((.+ ([0-9]+\.?[0-9]+));?)+""").findAll(description)
+    val matchResult = Regex("""((.+ ([0-9]+\.*[0-9]*));?)+""").findAll(description)
     if (matchResult.count() == 0) return ""
     val res = mutableListOf<Pair<String, Double>>()
     val work = description.split(";")

@@ -291,19 +291,25 @@ fun minContainingCircle(vararg points: Point): Circle {
     if (points.count() == 0) throw IllegalArgumentException()
     if (points.count() == 1) return Circle(points[0], 0.0)
     var res = Circle(Point(0.0, 0.0), 0.0)
-//    val min = Point(points.minBy { it.x }?.x!!, points.minBy { it.y }?.y!!)
-//    val max = Point(points.maxBy { it.x }?.x!!, points.maxBy { it.y }?.y!!)
-//    val mid = Point((min.x+max.x)/2,(min.y+max.y)/2)
-//    val rad = mid.distance(min)
-//    return Circle(mid,rad)
-    for (a in points)
-        for (b in points.filter { it != a })
+    for (a in points) {
+        for (b in points.filter { it != a }) {
             for (c in points.filter { it != a && it != b }) {
                 val tmp = circleByThreePoints(a, b, c)
-                for (p in points.filter { it != a && it != b && it != c })
-                    if (!tmp.contains(p)) break
-                res = tmp
+                for (p in points.filter { it != a && it != b && it != c }) {
+                    if (!tmp.contains(p)) {
+                        res = Circle(Point(0.0, 0.0), 0.0)
+                        break
+                    }
+                    res = tmp
+                }
             }
-    return res
+        }
+    }
+    if (res != Circle(Point(0.0, 0.0), 0.0)) return res
+    val min = Point(points.minBy { it.x }?.x!!, points.minBy { it.y }?.y!!)
+    val max = Point(points.maxBy { it.x }?.x!!, points.maxBy { it.y }?.y!!)
+    val mid = Point((min.x + max.x) / 2, (min.y + max.y) / 2)
+    val rad = mid.distance(min)
+    return Circle(mid, rad)
 }
 
