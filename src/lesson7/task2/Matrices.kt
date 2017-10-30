@@ -118,7 +118,18 @@ fun <E> rotate(matrix: Matrix<E>): Matrix<E> = TODO()
  * 1 2 3
  * 3 1 2
  */
-fun isLatinSquare(matrix: Matrix<Int>): Boolean = TODO()
+fun isLatinSquare(matrix: Matrix<Int>): Boolean {
+    if (matrix.height != matrix.width) return false
+    var num: MutableList<Int>
+    (0 until matrix.height).forEach { i ->
+        num = mutableListOf<Int>()
+        (0 until matrix.width).forEach { j ->
+            if (!num.contains(matrix[i, j])) num.add(matrix[i, j])
+            else return false
+        }
+    }
+    return true
+}
 
 /**
  * Средняя
@@ -205,7 +216,15 @@ fun canOpenLock(key: Matrix<Int>, lock: Matrix<Int>): Triple<Boolean, Int, Int> 
  * Инвертировать заданную матрицу.
  * При инвертировании знак каждого элемента матрицы следует заменить на обратный
  */
-operator fun Matrix<Int>.unaryMinus(): Matrix<Int> = TODO(this.toString())
+operator fun Matrix<Int>.unaryMinus(): Matrix<Int> {
+    val res = createMatrix(this.height, this.width, 0)
+    for (i in 0 until this.height) {
+        for (j in 0 until this.width) {
+            res[i, j] = this[i, j] * -1
+        }
+    }
+    return res
+}
 
 /**
  * Средняя
