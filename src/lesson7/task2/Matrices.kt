@@ -91,6 +91,18 @@ fun generateRectangles(height: Int, width: Int): Matrix<Int> = TODO()
  * 14 17 19 20
  */
 fun generateSnake(height: Int, width: Int): Matrix<Int> = TODO()
+/*{
+    val res = createMatrix(height,width,0)
+    var value = 1
+    for(i in 0 until width) {
+        var j = i
+        while (j >= 0) {
+            res[j, i] = value++
+            j--
+        }
+    }
+    return res
+}*/
 
 /**
  * Средняя
@@ -120,13 +132,24 @@ fun <E> rotate(matrix: Matrix<E>): Matrix<E> = TODO()
  */
 fun isLatinSquare(matrix: Matrix<Int>): Boolean {
     if (matrix.height != matrix.width) return false
-    var num: MutableList<Int>
+    val numEtal = 1..matrix.width
     (0 until matrix.height).forEach { i ->
-        num = mutableListOf<Int>()
+        val numR = mutableListOf<Int>()
+        val numС = mutableListOf<Int>()
         (0 until matrix.width).forEach { j ->
-            if (!num.contains(matrix[i, j])) num.add(matrix[i, j])
+            if (!numR.contains(matrix[i, j])) numR.add(matrix[i, j])
+            else return false
+            if (!numС.contains(matrix[j, i])) numС.add(matrix[j, i])
             else return false
         }
+        numR.sort()
+        numС.sort()
+        numEtal
+                .filter { n -> numR.count { it == n } != 1 }
+                .forEach { return false }
+        numEtal
+                .filter { n -> numС.count { it == n } != 1 }
+                .forEach { return false }
     }
     return true
 }
