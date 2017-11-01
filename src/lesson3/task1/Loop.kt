@@ -230,10 +230,10 @@ fun isPalindrome(n: Int): Boolean {
     val len = str.length
     if (len == 1) return true
     val center: Int
-    if (len % 2 == 1) {
-        center = (len - 1) / 2
+    center = if (len % 2 == 1) {
+        (len - 1) / 2
     } else {
-        center = len / 2
+        len / 2
     }
     for (i in 0..center)
         if (str[i] != str[len - i - 1]) return false
