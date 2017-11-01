@@ -290,16 +290,14 @@ fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
 fun minContainingCircle(vararg points: Point): Circle {
     if (points.count() == 0) throw IllegalArgumentException()
     if (points.count() == 1) return Circle(points[0], 0.0)
+    if (points.count() == 2) return circleByDiameter(Segment(points[0], points[1]))
     var res = Circle(Point(0.0, 0.0), 0.0)
     for (a in points) {
         for (b in points.filter { it != a }) {
             for (c in points.filter { it != a && it != b }) {
                 val tmp = circleByThreePoints(a, b, c)
-                for (p in points.filter { it != a && it != b && it != c }) {
-                    if (!tmp.contains(p)) {
-                        res = Circle(Point(0.0, 0.0), 0.0)
-                        break
-                    }
+                if (points.filter { it != a && it != b && it != c }.all { tmp.contains(it) }) {
+                    if (tmp.radius < res.radius)
                     res = tmp
                 }
             }
@@ -312,4 +310,3 @@ fun minContainingCircle(vararg points: Point): Circle {
     val rad = mid.distance(min)
     return Circle(mid, rad)
 }
-
