@@ -54,7 +54,11 @@ class MatrixImpl<E>(override val height: Int, override val width: Int, val e: E)
 
     override fun get(row: Int, column: Int): E = content[row * width + column]
 
-    override fun get(cell: Cell): E = get(cell.row, cell.column)
+    override fun get(cell: Cell): E {
+        if (cell.row !in 0 until height || cell.column !in 0 until width)
+            throw IllegalArgumentException("Row ${cell.row}/$width, Col ${cell.column}/$height")
+        return get(cell.row, cell.column)
+    }
 
     override fun set(row: Int, column: Int, value: E) {
         content[row * width + column] = value
@@ -83,8 +87,9 @@ class MatrixImpl<E>(override val height: Int, override val width: Int, val e: E)
             sb.append("[")
             for (column in 0 until width) {
                 sb.append(this[row, column])
+                if (column != width - 1) sb.append(" ")
             }
-            sb.append("]")
+            if (row != height - 1) sb.append("]\n") else sb.append("]")
         }
         sb.append("]")
         return "$sb"
@@ -99,7 +104,7 @@ class MatrixImpl<E>(override val height: Int, override val width: Int, val e: E)
     }
 
     init {
-        for (i in 0..height * width)
+        for (i in 0 until (height * width))
             content.add(e)
     }
 }

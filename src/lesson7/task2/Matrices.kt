@@ -1,6 +1,8 @@
 @file:Suppress("UNUSED_PARAMETER")
+
 package lesson7.task2
 
+import lesson7.task1.Cell
 import lesson7.task1.Matrix
 import lesson7.task1.createMatrix
 
@@ -59,7 +61,31 @@ operator fun Matrix<Int>.plus(other: Matrix<Int>): Matrix<Int> {
  * 10 11 12  5
  *  9  8  7  6
  */
-fun generateSpiral(height: Int, width: Int): Matrix<Int> = TODO()
+fun generateSpiral(height: Int, width: Int): Matrix<Int> {
+    var value = 1
+    val res = createMatrix(height, width, 0)
+    var k = 0
+    while (value <= height * width) {
+        k++
+        for (j in k - 1 until width - k + 1) {
+            if (value > height * width) break
+            res[Cell(k - 1, j)] = value++
+        }
+        for (j in k until height - k + 1) {
+            if (value > height * width) break
+            res[Cell(j, width - k)] = value++
+        }
+        for (j in width - k - 1 downTo k - 1) {
+            if (value > height * width) break
+            res[Cell(height - k, j)] = value++
+        }
+        for (j in height - k - 1 downTo k) {
+            if (value > height * width) break
+            res[Cell(j, k - 1)] = value++
+        }
+    }
+    return res
+}
 
 /**
  * Сложная
@@ -75,7 +101,35 @@ fun generateSpiral(height: Int, width: Int): Matrix<Int> = TODO()
  *  1  2  2  2  2  1
  *  1  1  1  1  1  1
  */
-fun generateRectangles(height: Int, width: Int): Matrix<Int> = TODO()
+fun generateRectangles(height: Int, width: Int): Matrix<Int> {
+    var value = 1
+    val res = createMatrix(height, width, 0)
+    var k = 0
+    while (value <= height * width) {
+        k++
+        for (j in k - 1 until width - k + 1) {
+            if (value > height * width) break
+            res[Cell(k - 1, j)] = k
+            value++
+        }
+        for (j in k until height - k + 1) {
+            if (value > height * width) break
+            res[Cell(j, width - k)] = k
+            value++
+        }
+        for (j in width - k - 1 downTo k - 1) {
+            if (value > height * width) break
+            res[Cell(height - k, j)] = k
+            value++
+        }
+        for (j in height - k - 1 downTo k) {
+            if (value > height * width) break
+            res[Cell(j, k - 1)] = k
+            value++
+        }
+    }
+    return res
+}
 
 /**
  * Сложная
@@ -90,19 +144,30 @@ fun generateRectangles(height: Int, width: Int): Matrix<Int> = TODO()
  * 10 13 16 18
  * 14 17 19 20
  */
-fun generateSnake(height: Int, width: Int): Matrix<Int> = TODO()
-/*{
-    val res = createMatrix(height,width,0)
+fun generateSnake(height: Int, width: Int): Matrix<Int> {
+    val res = createMatrix(height, width, 0)
     var value = 1
-    for(i in 0 until width) {
-        var j = i
-        while (j >= 0) {
-            res[j, i] = value++
-            j--
+    var row = 0
+    var col = 0
+    var curRow = 0
+    var curCol = 0
+    while (value <= height * width) {
+        res[Cell(row, col)] = value
+        if ((col == 0 && curCol < width) || (curCol == width - 1 && row == height - 1)) {
+            if (curCol < width - 1)
+                curCol++
+            else if (curCol == width - 1)
+                curRow++
+            row = curRow
+            col = curCol
+        } else {
+            row++
+            col--
         }
+        value++
     }
     return res
-}*/
+}
 
 /**
  * Средняя
@@ -115,7 +180,16 @@ fun generateSnake(height: Int, width: Int): Matrix<Int> = TODO()
  * 4 5 6      8 5 2
  * 7 8 9      9 6 3
  */
-fun <E> rotate(matrix: Matrix<E>): Matrix<E> = TODO()
+fun <E> rotate(matrix: Matrix<E>): Matrix<E> {
+    if (matrix.height != matrix.width) throw IllegalArgumentException()
+    val res = createMatrix(matrix.height, matrix.width, matrix[0, 0])
+    for (i in 0 until matrix.width) {
+        for (j in 0 until matrix.width) {
+            res[Cell(j, matrix.width - i - 1)] = matrix[Cell(i, j)]
+        }
+    }
+    return res
+}
 
 /**
  * Сложная
@@ -135,20 +209,20 @@ fun isLatinSquare(matrix: Matrix<Int>): Boolean {
     val numEtal = 1..matrix.width
     (0 until matrix.height).forEach { i ->
         val numR = mutableListOf<Int>()
-        val numС = mutableListOf<Int>()
+        val numC = mutableListOf<Int>()
         (0 until matrix.width).forEach { j ->
             if (!numR.contains(matrix[i, j])) numR.add(matrix[i, j])
             else return false
-            if (!numС.contains(matrix[j, i])) numС.add(matrix[j, i])
+            if (!numC.contains(matrix[j, i])) numC.add(matrix[j, i])
             else return false
         }
         numR.sort()
-        numС.sort()
+        numC.sort()
         numEtal
                 .filter { n -> numR.count { it == n } != 1 }
                 .forEach { return false }
         numEtal
-                .filter { n -> numС.count { it == n } != 1 }
+                .filter { n -> numC.count { it == n } != 1 }
                 .forEach { return false }
     }
     return true
@@ -171,7 +245,22 @@ fun isLatinSquare(matrix: Matrix<Int>): Boolean {
  *
  * 42 ===> 0
  */
-fun sumNeighbours(matrix: Matrix<Int>): Matrix<Int> = TODO()
+fun sumNeighbours(matrix: Matrix<Int>): Matrix<Int> {
+    val dv = listOf(Pair(1, 0), Pair(0, 1), Pair(-1, 0), Pair(0, -1), Pair(-1, -1), Pair(-1, 1), Pair(1, -1), Pair(1, 1))
+    val res = createMatrix(matrix.height, matrix.width, 0)
+    for (row in 0 until res.height) {
+        for (col in 0 until res.width) {
+            var sum = 0
+            dv.filter {
+                it.first + row in 0 until res.height &&
+                        it.second + col in 0 until res.width
+            }
+                    .forEach { sum += matrix[Cell(row + it.first, col + it.second)] }
+            res[Cell(row, col)] = sum
+        }
+    }
+    return res
+}
 
 /**
  * Средняя
