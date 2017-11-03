@@ -152,11 +152,15 @@ fun generateSnake(height: Int, width: Int): Matrix<Int> {
     var curRow = 0
     var curCol = 0
     while (value <= height * width) {
-        res[Cell(row, col)] = value
-        if ((col == 0 && curCol < width) || (curCol == width - 1 && row == height - 1)) {
-            if (curCol < width - 1)
+        try {
+            res[Cell(row, col)] = value
+        } catch (ex: IndexOutOfBoundsException) {
+            println("$row * $col / $height * $width")
+        }
+        if ((col == 0 && curCol in 0 until height - 1) || (curCol >= height - 2 && row == height - 1)) {
+            if (curCol in 0 until height - 1 || curCol in 0 until width - 1)
                 curCol++
-            else if (curCol == width - 1)
+            else if (curCol >= height - 1 || curCol == width - 1)
                 curRow++
             row = curRow
             col = curCol
@@ -277,7 +281,29 @@ fun sumNeighbours(matrix: Matrix<Int>): Matrix<Int> {
  * 0 0 1 0
  * 0 0 0 0
  */
-fun findHoles(matrix: Matrix<Int>): Holes = TODO()
+fun findHoles(matrix: Matrix<Int>): Holes {
+    val colL = MutableList(matrix.width) { true }
+    val rowL = MutableList(matrix.height) { true }
+    (0 until matrix.height).forEach { row ->
+        (0 until matrix.width).forEach { col ->
+            rowL[row] = rowL[row] && matrix[row, col] == 0
+        }
+    }
+    (0 until matrix.width).forEach { col ->
+        (0 until matrix.height).forEach { row ->
+            colL[col] = colL[col] && matrix[row, col] == 0
+        }
+    }
+    val cRes = mutableListOf<Int>()
+    val rRes = mutableListOf<Int>()
+    (0 until colL.size).forEach { i ->
+        if (colL[i]) cRes.add(i)
+    }
+    (0 until rowL.size).forEach { i ->
+        if (rowL[i]) rRes.add(i)
+    }
+    return Holes(rRes, cRes)
+}
 
 /**
  * Класс для описания местонахождения "дырок" в матрице
@@ -300,6 +326,29 @@ data class Holes(val rows: List<Int>, val columns: List<Int>)
  */
 fun sumSubMatrix(matrix: Matrix<Int>): Matrix<Int> = TODO()
 
+fun <E> matrixSize(matrix: Matrix<E>): Int = matrix.height * matrix.width
+
+fun <E> getSubMatrix(matrix: Matrix<E>, height: Int, width: Int, lx: Int, ly: Int): Matrix<E> {
+    if (ly + height > matrix.height || lx + width > matrix.width)
+        throw IllegalArgumentException("$ly + $height | $lx + $width || ${matrix.height} * ${matrix.width}")
+    val res = createMatrix(height, width, matrix[0, 0])
+    var x: Int
+    (ly until ly + height).withIndex().forEach { (y, row) ->
+        x = 0
+        (lx until lx + width).forEach { col -> res[y, x++] = matrix[row, col] }
+    }
+    return res
+}
+
+fun revertBin(matrix: Matrix<Int>): Matrix<Int> {
+    val res = createMatrix(matrix.height, matrix.width, 0)
+    (0 until matrix.height).forEach { row ->
+        (0 until matrix.width).forEach { col ->
+            res[row, col] = if (matrix[row, col] == 1) 0 else 1
+        }
+    }
+    return res
+}
 /**
  * Сложная
  *
@@ -320,7 +369,16 @@ fun sumSubMatrix(matrix: Matrix<Int>): Matrix<Int> = TODO()
  * Вернуть тройку (Triple) -- (да/нет, требуемый сдвиг по высоте, требуемый сдвиг по ширине).
  * Если наложение невозможно, то первый элемент тройки "нет" и сдвиги могут быть любыми.
  */
-fun canOpenLock(key: Matrix<Int>, lock: Matrix<Int>): Triple<Boolean, Int, Int> = TODO()
+fun canOpenLock(key: Matrix<Int>, lock: Matrix<Int>): Triple<Boolean, Int, Int> {
+    val keyClean = revertBin(key)
+    if (matrixSize(key) == matrixSize(lock)) return Triple(keyClean == lock, 0, 0)
+    (0..lock.height - key.height).forEach { row ->
+        (0..lock.width - key.width)
+                .filter { keyClean == getSubMatrix(lock, key.height, key.width, it, row) }
+                .forEach { return Triple(true, row, it) }
+    }
+    return Triple(false, 0, 0)
+}
 
 /**
  * Простая

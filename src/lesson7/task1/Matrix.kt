@@ -50,9 +50,9 @@ fun <E> createMatrix(height: Int, width: Int, e: E): Matrix<E> {
  */
 class MatrixImpl<E>(override val height: Int, override val width: Int, val e: E) : Matrix<E> {
 
-    private val content = mutableListOf<E>()
+    private val content = MutableList(height) { MutableList(width) { e } }
 
-    override fun get(row: Int, column: Int): E = content[row * width + column]
+    override fun get(row: Int, column: Int): E = content[row][column]
 
     override fun get(cell: Cell): E {
         if (cell.row !in 0 until height || cell.column !in 0 until width)
@@ -61,7 +61,7 @@ class MatrixImpl<E>(override val height: Int, override val width: Int, val e: E)
     }
 
     override fun set(row: Int, column: Int, value: E) {
-        content[row * width + column] = value
+        content[row][column] = value
     }
 
     override fun set(cell: Cell, value: E) {
@@ -72,10 +72,10 @@ class MatrixImpl<E>(override val height: Int, override val width: Int, val e: E)
         if (!(other is MatrixImpl<*> &&
                 height == other.height &&
                 width == other.width)) return false
-        for (row in 0 until this.height) {
-            for (col in 0 until this.width) {
-                if (this[row, col] != other[row, col]) return false
-            }
+        (0 until this.height).forEach { row ->
+            (0 until this.width)
+                    .filter { this[row, it] != other[row, it] }
+                    .forEach { return false }
         }
         return true
     }
@@ -101,10 +101,5 @@ class MatrixImpl<E>(override val height: Int, override val width: Int, val e: E)
         result = 31 * result + (e?.hashCode() ?: 0)
         result = 31 * result + content.hashCode()
         return result
-    }
-
-    init {
-        for (i in 0 until (height * width))
-            content.add(e)
     }
 }
