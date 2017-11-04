@@ -319,7 +319,20 @@ data class Holes(val rows: List<Int>, val columns: List<Int>)
  *
  * К примеру, центральный элемент 12 = 1 + 2 + 4 + 5, элемент в левом нижнем углу 12 = 1 + 4 + 7 и так далее.
  */
-fun sumSubMatrix(matrix: Matrix<Int>): Matrix<Int> = TODO()
+fun sumSubMatrix(matrix: Matrix<Int>): Matrix<Int> {
+    val res = createMatrix(matrix.height, matrix.width, 0)
+    for (row in 0 until matrix.height) {
+        for (col in 0 until matrix.width) {
+            val sub = getSubMatrix(matrix, row + 1, col + 1, 0, 0)
+            var sum = 0
+            for (sRow in 0 until sub.height)
+                for (sCol in 0 until sub.width)
+                    sum += sub[sRow, sCol]
+            res[row, col] = sum
+        }
+    }
+    return res
+}
 
 fun <E> getSubMatrix(matrix: Matrix<E>, height: Int, width: Int, lx: Int, ly: Int): Matrix<E> {
     if (ly + height > matrix.height || lx + width > matrix.width)
@@ -398,7 +411,18 @@ operator fun Matrix<Int>.unaryMinus(): Matrix<Int> {
  * В противном случае бросить IllegalArgumentException.
  * Подробно про порядок умножения см. статью Википедии "Умножение матриц".
  */
-operator fun Matrix<Int>.times(other: Matrix<Int>): Matrix<Int> = TODO(this.toString())
+operator fun Matrix<Int>.times(other: Matrix<Int>): Matrix<Int> {
+    if (this.width != other.height) throw IllegalArgumentException()
+    val res = createMatrix(this.height, other.width, 0)
+    for (rowA in 0 until this.height) {
+        for (colB in 0 until other.width) {
+            for (k in 0 until this.width) {
+                res[rowA, colB] += this[rowA, k] * other[k, colB]
+            }
+        }
+    }
+    return res
+}
 
 /**
  * Сложная
@@ -427,7 +451,32 @@ operator fun Matrix<Int>.times(other: Matrix<Int>): Matrix<Int> = TODO(this.toSt
  * 0  4 13  6
  * 3 10 11  8
  */
-fun fifteenGameMoves(matrix: Matrix<Int>, moves: List<Int>): Matrix<Int> = TODO()
+fun <E> indexOf(cur: Matrix<Int>, el: E): Cell {
+    (0 until cur.height).forEach { row ->
+        (0 until cur.width)
+                .filter { cur[row, it] == el }
+                .forEach { return Cell(row, it) }
+    }
+    return Cell(-1, -1)
+}
+
+fun fifteenGameMoves(matrix: Matrix<Int>, moves: List<Int>): Matrix<Int> {
+    val delta = listOf(Pair(0, 1), Pair(1, 0), Pair(-1, 0), Pair(0, -1))
+    for (move in moves) {
+        val curCell = indexOf(matrix, move)
+        var curZero = Cell(-1, -1)
+        if (curCell.row == -1) throw IllegalStateException()
+        for (d in delta) {
+            if (curCell.row + d.first in 0..3 && curCell.column + d.second in 0..3)
+                if (matrix[Cell(curCell.row + d.first, curCell.column + d.second)] == 0)
+                    curZero = Cell(curCell.row + d.first, curCell.column + d.second)
+        }
+        if (curZero.row == -1) throw IllegalStateException()
+        matrix[curZero] = matrix[curCell]
+        matrix[curCell] = 0
+    }
+    return matrix
+}
 
 /**
  * Очень сложная
