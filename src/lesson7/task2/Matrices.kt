@@ -152,21 +152,16 @@ fun generateSnake(height: Int, width: Int): Matrix<Int> {
     var curRow = 0
     var curCol = 0
     while (value <= height * width) {
-        try {
-            res[Cell(row, col)] = value
-        } catch (ex: IndexOutOfBoundsException) {
-            println("$row * $col / $height * $width")
+        res[row, col] = value
+        if (col == 0 || row == height - 1) {
+            if (curCol == width - 1) curRow++
+            else if (curCol < width - 1) curCol++
         }
-        if ((col == 0 && curCol in 0 until height - 1) || (curCol >= height - 2 && row == height - 1)) {
-            if (curCol in 0 until height - 1 || curCol in 0 until width - 1)
-                curCol++
-            else if (curCol >= height - 1 || curCol == width - 1)
-                curRow++
+        row++
+        col--
+        if (col == -1 || row == height) {
             row = curRow
             col = curCol
-        } else {
-            row++
-            col--
         }
         value++
     }
@@ -326,8 +321,6 @@ data class Holes(val rows: List<Int>, val columns: List<Int>)
  */
 fun sumSubMatrix(matrix: Matrix<Int>): Matrix<Int> = TODO()
 
-fun <E> matrixSize(matrix: Matrix<E>): Int = matrix.height * matrix.width
-
 fun <E> getSubMatrix(matrix: Matrix<E>, height: Int, width: Int, lx: Int, ly: Int): Matrix<E> {
     if (ly + height > matrix.height || lx + width > matrix.width)
         throw IllegalArgumentException("$ly + $height | $lx + $width || ${matrix.height} * ${matrix.width}")
@@ -349,6 +342,7 @@ fun revertBin(matrix: Matrix<Int>): Matrix<Int> {
     }
     return res
 }
+
 /**
  * Сложная
  *
@@ -371,7 +365,7 @@ fun revertBin(matrix: Matrix<Int>): Matrix<Int> {
  */
 fun canOpenLock(key: Matrix<Int>, lock: Matrix<Int>): Triple<Boolean, Int, Int> {
     val keyClean = revertBin(key)
-    if (matrixSize(key) == matrixSize(lock)) return Triple(keyClean == lock, 0, 0)
+    if (key.height == lock.height && key.width == lock.width) return Triple(keyClean == lock, 0, 0)
     (0..lock.height - key.height).forEach { row ->
         (0..lock.width - key.width)
                 .filter { keyClean == getSubMatrix(lock, key.height, key.width, it, row) }
