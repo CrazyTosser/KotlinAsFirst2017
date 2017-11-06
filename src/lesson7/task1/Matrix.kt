@@ -43,6 +43,15 @@ fun <E> createMatrix(height: Int, width: Int, e: E): Matrix<E> {
     return MatrixImpl(height, width, e)
 }
 
+fun <E> createMatrix(height: Int, width: Int, values: List<List<E>>): Matrix<E> {
+    val matrix = createMatrix(height, width, values[0][0])
+    for (row in 0 until height) {
+        for (column in 0 until width) {
+            matrix[row, column] = values[row][column]
+        }
+    }
+    return matrix
+}
 /**
  * Средняя сложность
  *
@@ -69,7 +78,7 @@ class MatrixImpl<E>(override val height: Int, override val width: Int, val e: E)
     }
 
     override fun equals(other: Any?): Boolean {
-        if (!(other is MatrixImpl<*> &&
+        if (!(other is Matrix<*> &&
                 height == other.height &&
                 width == other.width)) return false
         (0 until this.height).forEach { row ->
