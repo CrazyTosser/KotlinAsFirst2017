@@ -230,11 +230,11 @@ fun isNormal(a: Point, b: Point, c: Point): Boolean {
     val yDeltaB = c.y - b.y
     val xDeltaB = c.x - b.x
     return when {
-        abs(xDeltaA) <= 0.000000001 && abs(yDeltaB) <= 0.000000001 -> false
-        abs(yDeltaA) <= 0.0000001 -> true
-        abs(yDeltaB) <= 0.0000001 -> true
-        abs(xDeltaA) <= 0.000000001 -> true
-        else -> abs(xDeltaB) <= 0.000000001
+        abs(xDeltaA) <= 1e-9 && abs(yDeltaB) <= 1e-9 -> false
+        abs(yDeltaA) <= 1e-7 -> true
+        abs(yDeltaB) <= 1e-7 -> true
+        abs(xDeltaA) <= 1e-9 -> true
+        else -> abs(xDeltaB) <= 1e-9
     }
 }
 
@@ -248,7 +248,7 @@ fun isNormal(a: Point, b: Point, c: Point): Boolean {
  * построить окружность, описанную вокруг треугольника - эквивалентная задача).
  */
 fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
-    val pointArr =
+    /*val pointArr =
             when {
                 !isNormal(a, b, c) -> listOf(a, b, c)
                 !isNormal(a, c, b) -> listOf(a, c, b)
@@ -257,22 +257,17 @@ fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
                 !isNormal(c, b, a) -> listOf(c, b, a)
                 !isNormal(c, a, b) -> listOf(c, a, b)
                 else -> return Circle(Point(0.0, 0.0), 0.0)
-            }
-    val yDeltaA = (pointArr[1].y - pointArr[0].y)
-    val yDeltaB = (pointArr[2].y - pointArr[1].y)
-    val xDeltaA = (pointArr[1].x - pointArr[0].x)
-    val xDeltaB = (pointArr[2].x - pointArr[1].x)
-    val mid: Point
-    if (Math.abs(xDeltaA) <= 1e-5 && Math.abs(yDeltaB) <= 1e-5) {
-        mid = Point(0.5 * (pointArr[1].x + pointArr[2].x), 0.5 * (pointArr[0].y + pointArr[1].y))
-    } else {
-        val aSlope = yDeltaA / xDeltaA
-        val bSlope = yDeltaB / xDeltaB
-        val midX =
-                (aSlope * bSlope * (pointArr[0].y - pointArr[2].y) + bSlope * (pointArr[0].x + pointArr[1].x) - aSlope * (pointArr[1].x + pointArr[2].x)) / (2 * (bSlope - aSlope))
-        val midY = -1 * (midX - (pointArr[0].x + pointArr[1].x) / 2) / aSlope + (pointArr[0].y + pointArr[1].y) / 2
-        mid = Point(midX, midY)
-    }
+            }*/
+    val y12 = b.y - c.y
+    val y20 = c.y - a.y
+    val y01 = a.y - b.y
+    val under = a.x * y12 + b.x * y20 + c.x * y01
+    val k1 = sqr(b.x) + sqr(b.y) - sqr(c.x) - sqr(c.y)
+    val k2 = sqr(c.x) + sqr(c.y) - sqr(a.x) - sqr(a.y)
+    val k3 = sqr(a.x) + sqr(a.y) - sqr(b.x) - sqr(b.y)
+    val x0 = -0.5 * (a.y * k1 + b.y * k2 + c.y * k3) / under
+    val y0 = 0.5 * (a.x * k1 + b.x * k2 + c.x * k3) / under
+    val mid = Point(x0, y0)
     return Circle(mid, mid.distance(a))
 }
 
@@ -298,7 +293,7 @@ fun minContainingCircle(vararg points: Point): Circle {
                 val tmp = circleByThreePoints(a, b, c)
                 if (points.all { tmp.contains(it) }) {
                     if (tmp.radius < res.radius)
-                    res = tmp
+                        res = tmp
                 }
             }
         }
