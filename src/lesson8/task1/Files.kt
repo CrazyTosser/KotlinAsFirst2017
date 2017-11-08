@@ -92,7 +92,8 @@ private fun String.count(predicate: String): Int =
 fun sibilants(inputName: String, outputName: String) {
     val outputStream = File(outputName).bufferedWriter()
     var type = false
-    (File(inputName).readLines()).forEach { line ->
+    val inp = File(inputName).readLines()
+    for ((index, line) in inp.withIndex()) {
         (line).forEach { c ->
             if (type) {
                 when (c) {
@@ -110,7 +111,7 @@ fun sibilants(inputName: String, outputName: String) {
             }
             if (c == 'ж' || c == 'Ж' || c == 'ш' || c == 'Ш' || c == 'ч' || c == 'Ч' || c == 'щ' || c == 'Щ') type = true
         }
-        outputStream.newLine()
+        if (index < inp.count()) outputStream.newLine()
     }
     outputStream.close()
 }
@@ -135,14 +136,15 @@ fun sibilants(inputName: String, outputName: String) {
 fun centerFile(inputName: String, outputName: String) {
     val et = (File(inputName).readLines()).maxBy { it.trim().length }?.length ?: 0
     val outputStream = File(outputName).bufferedWriter()
-    (File(inputName).readLines()).forEach { line ->
+    val inp = File(inputName).readLines()
+    for ((index, line) in inp.withIndex()) {
         val delta = et - line.trim().length
         if (delta % 2 == 1)
             (1..delta / 2).forEach { outputStream.write(" ") }
         else
             (1..delta / 2).forEach { outputStream.write(" ") }
         outputStream.write(line.trim())
-        outputStream.newLine()
+        if (index < inp.count()) outputStream.newLine()
     }
     outputStream.close()
 }
