@@ -111,7 +111,7 @@ fun sibilants(inputName: String, outputName: String) {
             }
             if (c == 'ж' || c == 'Ж' || c == 'ш' || c == 'Ш' || c == 'ч' || c == 'Ч' || c == 'щ' || c == 'Щ') type = true
         }
-        if (index in 0 until inp.count()) outputStream.newLine()
+        if (index in 0 until inp.count() - 1) outputStream.newLine()
     }
     outputStream.close()
 }
@@ -134,17 +134,14 @@ fun sibilants(inputName: String, outputName: String) {
  *
  */
 fun centerFile(inputName: String, outputName: String) {
-    val et = (File(inputName).readLines()).maxBy { it.trim().length }?.length ?: 0
-    val outputStream = File(outputName).bufferedWriter()
     val inp = File(inputName).readLines()
+    val et = inp.maxBy { it.trim().length }?.length ?: 0
+    val outputStream = File(outputName).bufferedWriter()
     for ((index, line) in inp.withIndex()) {
         val delta = et - line.trim().length
-        if (delta % 2 == 1)
-            (1..delta / 2).forEach { outputStream.write(" ") }
-        else
-            (1..delta / 2).forEach { outputStream.write(" ") }
+        (1..delta / 2).forEach { outputStream.write(" ") }
         outputStream.write(line.trim())
-        if (index in 0 until inp.count()) outputStream.newLine()
+        if (index in 0 until inp.count() - 1) outputStream.newLine()
     }
     outputStream.close()
 }
@@ -177,7 +174,24 @@ fun centerFile(inputName: String, outputName: String) {
  * 8) Если входной файл удовлетворяет требованиям 1-7, то он должен быть в точности идентичен выходному файлу
  */
 fun alignFileByWidth(inputName: String, outputName: String) {
-    TODO()
+    val inp = File(inputName).readLines()
+    val et = inp.maxBy { it.trim().length }?.length ?: 0
+    val outputStream = File(outputName).bufferedWriter()
+    for ((index, line) in inp.withIndex()) {
+        val tmp = line.trim()
+        val delta = et - tmp.length
+        val words = tmp.split(" ")
+        val total = delta / words.size
+        var dif = delta % words.size
+        outputStream.write(words[0].trim())
+        for (word in tmp.split(" ").filter { it != words[0] && it.isNotEmpty() }) {
+            (1..total + dif).forEach { outputStream.write(" ") }
+            outputStream.write(word.trim())
+            if (dif != 0) dif--
+        }
+        if (index in 0 until inp.count() - 1) outputStream.newLine()
+    }
+    outputStream.close()
 }
 
 /**
@@ -186,6 +200,7 @@ fun alignFileByWidth(inputName: String, outputName: String) {
  * Во входном файле с именем inputName содержится некоторый текст (в том числе, и на русском языке).
  *
  * Вернуть ассоциативный массив, содержащий 20 наиболее часто встречающихся слов с их количеством.
+ *
  * Если в тексте менее 20 различных слов, вернуть все слова.
  *
  * Словом считается непрерывная последовательность из букв (кириллических,
