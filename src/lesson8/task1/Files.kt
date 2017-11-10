@@ -187,7 +187,7 @@ fun alignFileByWidth(inputName: String, outputName: String) {
         for (word in tmp.split(" ").filter { it != words[0] && it.isNotEmpty() }) {
             (1..total + dif).forEach { outputStream.write(" ") }
             outputStream.write(word.trim())
-            if (dif != 0) dif--
+            if (dif > 0) dif--
         }
         if (index in 0 until inp.count() - 1) outputStream.newLine()
     }

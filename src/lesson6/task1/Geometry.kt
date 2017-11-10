@@ -3,7 +3,7 @@
 package lesson6.task1
 
 import lesson1.task1.sqr
-import java.lang.Math.abs
+import java.lang.Math.*
 
 /**
  * Точка на плоскости
@@ -151,11 +151,18 @@ class Line private constructor(val b: Double, val angle: Double) {
      * Для этого необходимо составить и решить систему из двух уравнений (каждое для своей прямой)
      */
     fun crossPoint(other: Line): Point {
-        val del = Math.tan(this.angle) * Math.cos(other.angle) - Math.sin(other.angle)
-        val dCos = Math.cos(other.angle) / Math.cos(this.angle)
-        val x = (other.b - this.b * dCos) / del
-        val y = x * Math.tan(this.angle) + (this.b / Math.cos(this.angle))
-        return Point(x, y)
+        val xPoint = (other.b / cos(other.angle) - b / cos(angle)) /
+                (tan(angle) - tan(other.angle))
+        var yPoint = xPoint * tan(angle) + b / cos(angle)
+        if (angle == PI / 2) {
+            yPoint = -b * tan(other.angle) + other.b / cos(other.angle)
+            return Point(-b, yPoint)
+        }
+        if (other.angle == PI / 2) {
+            yPoint = -other.b * tan(angle) + b / cos(angle)
+            return Point(-other.b, yPoint)
+        }
+        return Point(xPoint, yPoint)
     }
 
     override fun equals(other: Any?) = other is Line && angle == other.angle && b == other.b
@@ -175,10 +182,7 @@ class Line private constructor(val b: Double, val angle: Double) {
  * Построить прямую по отрезку
  */
 fun lineBySegment(s: Segment): Line {
-    //var ang = Math.atan((s.end.y - s.begin.y) / (s.end.x - s.begin.x))
     var ang = Math.atan2((s.end.y - s.begin.y), (s.end.x - s.begin.x))
-    /*if (ang == Double.NEGATIVE_INFINITY || ang == Double.POSITIVE_INFINITY)
-        ang = 1.0*/
     if (ang < 0) ang += Math.PI
     if (ang >= Math.PI) ang -= Math.PI
     return Line(s.begin, ang)
@@ -214,17 +218,17 @@ fun bisectorByPoints(a: Point, b: Point): Line {
  */
 fun findNearestCirclePair(vararg circles: Circle): Pair<Circle, Circle> {
     if (circles.count() < 2) throw IllegalArgumentException()
-    var res = Pair<Circle, Circle>(circles[0], circles[1])
-    for (c1 in circles)
-        for (c2 in circles) {
-            if (c1 == c2) continue
-            if (res.first.distance(res.second) > c1.distance(c2))
-                res = Pair(c1, c2)
-        }
+    var res = Pair(circles[0], circles[1])
+    circles.forEach { c1 ->
+        circles.filter { it != c1 }
+                .asSequence()
+                .filter { res.first.distance(res.second) > c1.distance(it) }
+                .forEach { res = Pair(c1, it) }
+    }
     return res
 }
 
-fun isNormal(a: Point, b: Point, c: Point): Boolean {
+/*fun isNormal(a: Point, b: Point, c: Point): Boolean {
     val yDeltaA = b.y - a.y
     val xDeltaA = b.x - a.x
     val yDeltaB = c.y - b.y
@@ -236,7 +240,7 @@ fun isNormal(a: Point, b: Point, c: Point): Boolean {
         abs(xDeltaA) <= 1e-9 -> true
         else -> abs(xDeltaB) <= 1e-9
     }
-}
+}*/
 
 /**
  * Сложная
@@ -248,27 +252,10 @@ fun isNormal(a: Point, b: Point, c: Point): Boolean {
  * построить окружность, описанную вокруг треугольника - эквивалентная задача).
  */
 fun circleByThreePoints(a: Point, b: Point, c: Point): Circle {
-    /*val pointArr =
-            when {
-                !isNormal(a, b, c) -> listOf(a, b, c)
-                !isNormal(a, c, b) -> listOf(a, c, b)
-                !isNormal(b, a, c) -> listOf(b, a, c)
-                !isNormal(b, c, a) -> listOf(b, c, a)
-                !isNormal(c, b, a) -> listOf(c, b, a)
-                !isNormal(c, a, b) -> listOf(c, a, b)
-                else -> return Circle(Point(0.0, 0.0), 0.0)
-            }*/
-    val y12 = b.y - c.y
-    val y20 = c.y - a.y
-    val y01 = a.y - b.y
-    val under = a.x * y12 + b.x * y20 + c.x * y01
-    val k1 = sqr(b.x) + sqr(b.y) - sqr(c.x) - sqr(c.y)
-    val k2 = sqr(c.x) + sqr(c.y) - sqr(a.x) - sqr(a.y)
-    val k3 = sqr(a.x) + sqr(a.y) - sqr(b.x) - sqr(b.y)
-    val x0 = -0.5 * (a.y * k1 + b.y * k2 + c.y * k3) / under
-    val y0 = 0.5 * (a.x * k1 + b.x * k2 + c.x * k3) / under
-    val mid = Point(x0, y0)
-    return Circle(mid, mid.distance(a))
+    val bis1 = bisectorByPoints(a, b)
+    val bis2 = bisectorByPoints(b, c)
+    val center = bis1.crossPoint(bis2)
+    return Circle(center, center.distance(a))
 }
 
 /**
