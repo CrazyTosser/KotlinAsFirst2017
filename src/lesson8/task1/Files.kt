@@ -91,9 +91,10 @@ private fun String.count(predicate: String): Int =
  */
 fun sibilants(inputName: String, outputName: String) {
     val outputStream = File(outputName).bufferedWriter()
-    var type = false
+    var type: Boolean
     val inp = File(inputName).readLines()
     for ((index, line) in inp.withIndex()) {
+        type = false
         (line).forEach { c ->
             if (type) {
                 when (c) {
@@ -139,7 +140,10 @@ fun centerFile(inputName: String, outputName: String) {
     val outputStream = File(outputName).bufferedWriter()
     for ((index, line) in inp.withIndex()) {
         val delta = et - line.trim().length
-        (1..delta / 2).forEach { outputStream.write(" ") }
+        if (delta % 2 == 1)
+            (1..delta / 2).forEach { outputStream.write(" ") }
+        else
+            (0 until delta / 2).forEach { outputStream.write(" ") }
         outputStream.write(line.trim())
         if (index in 0 until inp.count() - 1) outputStream.newLine()
     }
