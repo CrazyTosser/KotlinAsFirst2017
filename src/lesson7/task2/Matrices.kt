@@ -5,7 +5,6 @@ package lesson7.task2
 import lesson7.task1.Cell
 import lesson7.task1.Matrix
 import lesson7.task1.createMatrix
-import java.lang.Math.abs
 
 // Все задачи в этом файле требуют наличия реализации интерфейса "Матрица" в Matrix.kt
 
@@ -518,81 +517,4 @@ fun fifteenGameMoves(matrix: Matrix<Int>, moves: List<Int>): Matrix<Int> {
  *
  * Перед решением этой задачи НЕОБХОДИМО решить предыдущую
  */
-var deep = 0
-var board = createMatrix(1, 1, 0)
-var minPrev = 0
-val opposite = listOf(2, 3, 0, 1)
-val dx = listOf(0, -1, 0, 1)
-val dy = listOf(1, 0, -1, 0)
-var resList = mutableListOf<Int>()
-//Эврестическая оценочная функция Манхеттенского расстояния
-fun manheten(): Int {
-    var manh = 0
-    (0..3).forEach { row ->
-        (0..3).forEach { col ->
-            val value = board[row, col]
-            if (value > 0)
-                manh += abs(row - ((value - 1) / 4)) + abs(col - ((value - 1) % 4))
-        }
-    }
-    return manh
-}
-
-fun recSolution(g: Int, prev: Int, x0: Int, y0: Int): Boolean {
-    val h = manheten()
-    if (h == 0) return true
-    val f = g + h
-    if (f > deep) {
-        if (minPrev > f) minPrev = f
-        return true
-    }
-    var new: Cell
-    for (row in 0..3) {
-        if (opposite[row] != prev) {
-            new = Cell(y0 + dy[row], x0 + dx[row])
-            if (new.row in 0..3 && new.column in 0..3) {
-                var tmp = board[y0, x0]
-                board[y0, x0] = board[new]
-                board[new] = tmp
-                val res = recSolution(g + 1, row, new.column, new.row)
-                tmp = board[y0, x0]
-                board[y0, x0] = board[new]
-                board[new] = tmp
-                if (res) {
-                    resList.add(board[new])
-                    return true
-                }
-            }
-        }
-    }
-    return false
-}
-
-fun idaStar(): Boolean {
-    var res = false
-    var zero: Cell
-    deep = manheten()
-    while (deep <= 50) {
-        minPrev = 1000
-        zero = indexOf(board, 0)
-        res = recSolution(0, -1, zero.column, zero.row)
-        deep = minPrev
-        if (res) break
-    }
-    return res
-}
-
-fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
-    val start1 = createMatrix(4, 4, listOf(listOf(1, 2, 3, 4), listOf(5, 6, 7, 8),
-            listOf(9, 10, 11, 12), listOf(13, 14, 15, 0)))
-    val start2 = createMatrix(4, 4, listOf(listOf(1, 2, 3, 4), listOf(5, 6, 7, 8),
-            listOf(9, 10, 11, 12), listOf(13, 15, 14, 0)))
-    if (matrix == start1 || matrix == start2)
-        return listOf()
-    board = matrix
-    resList = mutableListOf()
-    idaStar()
-    println(fifteenGameMoves(board, resList).toString())
-    println("-----")
-    return resList
-}
+fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> = TODO()
