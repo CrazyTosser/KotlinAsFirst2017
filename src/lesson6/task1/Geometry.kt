@@ -3,7 +3,8 @@
 package lesson6.task1
 
 import lesson1.task1.sqr
-import java.lang.Math.*
+import java.lang.Math.cos
+import java.lang.Math.tan
 
 /**
  * Точка на плоскости
@@ -96,6 +97,8 @@ data class Segment(val begin: Point, val end: Point) {
 
     override fun hashCode() =
             begin.hashCode() + end.hashCode()
+
+    fun getCenter() = Point((begin.x + end.x) / 2, (begin.y + end.y) / 2)
 }
 
 /**
@@ -125,11 +128,8 @@ fun diameter(vararg points: Point): Segment {
  * Построить окружность по её диаметру, заданному двумя точками
  * Центр её должен находиться посередине между точками, а радиус составлять половину расстояния между ними
  */
-fun circleByDiameter(diameter: Segment): Circle {
-    val x = (diameter.begin.x + diameter.end.x) / 2
-    val y = (diameter.begin.y + diameter.end.y) / 2
-    return Circle(Point(x, y), diameter.begin.distance(Point(x, y)))
-}
+fun circleByDiameter(diameter: Segment): Circle =
+        Circle(diameter.getCenter(), diameter.begin.distance(diameter.getCenter()))
 
 /**
  * Прямая, заданная точкой point и углом наклона angle (в радианах) по отношению к оси X.
@@ -151,18 +151,15 @@ class Line private constructor(val b: Double, val angle: Double) {
      * Для этого необходимо составить и решить систему из двух уравнений (каждое для своей прямой)
      */
     fun crossPoint(other: Line): Point {
-        val xPoint = (other.b / cos(other.angle) - b / cos(angle)) /
-                (tan(angle) - tan(other.angle))
-        var yPoint = xPoint * tan(angle) + b / cos(angle)
-        if (angle == PI / 2) {
-            yPoint = -b * tan(other.angle) + other.b / cos(other.angle)
-            return Point(-b, yPoint)
-        }
-        if (other.angle == PI / 2) {
-            yPoint = -other.b * tan(angle) + b / cos(angle)
-            return Point(-other.b, yPoint)
-        }
-        return Point(xPoint, yPoint)
+        if (this.angle == Math.PI / 2) return Point(-this.b, (-this.b) *
+                tan(other.angle) + other.b / cos(other.angle))
+        if (other.angle == Math.PI / 2) return Point(-other.b, (-other.b) *
+                tan(this.angle) + this.b / cos(this.angle))
+        return Point(-(this.b / cos(this.angle) - other.b / cos(other.angle)) /
+                (tan(this.angle) - tan(other.angle)),
+                (-(this.b / cos(this.angle) - other.b / cos(other.angle)) /
+                        (tan(this.angle) - tan(other.angle))) *
+                        tan(this.angle) + this.b / cos(this.angle))
     }
 
     override fun equals(other: Any?) = other is Line && angle == other.angle && b == other.b
@@ -201,11 +198,9 @@ fun lineByPoints(a: Point, b: Point): Line = lineBySegment(Segment(a, b))
  * Построить серединный перпендикуляр по отрезку или по двум точкам
  */
 fun bisectorByPoints(a: Point, b: Point): Line {
-    val ang =
-            if (lineByPoints(a, b).angle + Math.PI / 2 >= Math.PI)
-                lineByPoints(a, b).angle - Math.PI / 2
-            else
-                lineByPoints(a, b).angle + Math.PI / 2
+    var ang = if (lineByPoints(a, b).angle <= Math.PI / 2) Math.PI / 2 + lineByPoints(a, b).angle
+    else lineByPoints(a, b).angle - Math.PI / 2
+    if (ang == Math.PI) ang = 0.0
     val mid = Point((a.x + b.x) / 2, (a.y + b.y) / 2)
     return Line(mid, ang)
 }

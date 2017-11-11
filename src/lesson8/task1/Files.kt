@@ -112,7 +112,7 @@ fun sibilants(inputName: String, outputName: String) {
             }
             if (c == 'ж' || c == 'Ж' || c == 'ш' || c == 'Ш' || c == 'ч' || c == 'Ч' || c == 'щ' || c == 'Щ') type = true
         }
-        //if (index in 0 until inp.count() - 1) outputStream.newLine()
+        if (index in 0 until inp.count() - 1) outputStream.newLine()
     }
     outputStream.close()
 }
@@ -145,7 +145,7 @@ fun centerFile(inputName: String, outputName: String) {
         else
             (0 until delta / 2).forEach { outputStream.write(" ") }
         outputStream.write(line.trim())
-        //if (index in 0 until inp.count() - 1) outputStream.newLine()
+        if (index in 0 until inp.count() - 1) outputStream.newLine()
     }
     outputStream.close()
 }
