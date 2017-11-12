@@ -146,7 +146,7 @@ fun centerFile(inputName: String, outputName: String) {
         else
             (0 until delta / 2).forEach { outputStream.write(" ") }
         outputStream.write(line.trim())
-        if (index in 0 until inp.count() - 1) outputStream.newLine()
+        if (index in 0 until inp.count()) outputStream.newLine()
     }
     outputStream.close()
 }
