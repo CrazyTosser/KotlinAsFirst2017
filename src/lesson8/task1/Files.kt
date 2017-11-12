@@ -112,8 +112,8 @@ fun sibilants(inputName: String, outputName: String) {
             }
             if (c == 'ж' || c == 'Ж' || c == 'ш' || c == 'Ш' || c == 'ч' || c == 'Ч' || c == 'щ' || c == 'Щ') type = true
         }
-        //if (index in 0 until inp.count() - 1) outputStream.newLine()
-        outputStream.newLine()
+        if (index in 0 until inp.size) outputStream.newLine()
+        //outputStream.newLine()
     }
     outputStream.close()
 }
