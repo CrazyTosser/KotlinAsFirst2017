@@ -1,18 +1,24 @@
 package lesson6.task3
 
+import lesson7.task1.Cell
 import java.util.*
 
 class Graph {
-    private data class Vertex(val name: String) {
+    data class Vertex(val name: String, val h: Int, val move: Cell) {
+        var unlock = true
         val neighbors = mutableSetOf<Vertex>()
     }
 
     private val vertices = mutableMapOf<String, Vertex>()
 
-    private operator fun get(name: String) = vertices[name] ?: throw IllegalArgumentException()
+    operator fun get(name: String) = vertices[name] ?: throw IllegalArgumentException()
 
     fun addVertex(name: String) {
-        vertices[name] = Vertex(name)
+        vertices[name] = Vertex(name, 0, Cell(0, 0))
+    }
+
+    fun addVertex(name: String, h: Int, move: Cell) {
+        vertices[name] = Vertex(name, h, move)
     }
 
     private fun connect(first: Vertex, second: Vertex) {

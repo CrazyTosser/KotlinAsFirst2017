@@ -268,7 +268,7 @@ fun minContainingCircle(vararg points: Point): Circle {
     if (points.count() == 0) throw IllegalArgumentException()
     if (points.count() == 1) return Circle(points[0], 0.0)
     if (points.count() == 2) return circleByDiameter(Segment(points[0], points[1]))
-    var res = Circle(Point(0.0, 0.0), 100000000000000000.0)
+    var res = Circle(Point(0.0, 0.0), 1e+10000000)
     for (a in points) {
         for (b in points.filter { it != a }) {
             for (c in points.filter { it != a && it != b }) {

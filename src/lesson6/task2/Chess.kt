@@ -204,8 +204,7 @@ fun kingMoveNumber(start: Square, end: Square): Int {
     if (!start.inside() || !end.inside()) throw IllegalArgumentException()
     var path = mutableListOf<Square>(start)
     var res = 0
-    while (true) {
-        if (end in path) break
+    while (end !in path) {
         path = li(end, path, delKing)
         res++
     }

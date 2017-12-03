@@ -29,6 +29,8 @@ interface Matrix<E> {
      */
     operator fun set(row: Int, column: Int, value: E)
     operator fun set(cell: Cell, value: E)
+    fun indexOf(e: E): Cell
+    fun copy(): Matrix<E>
 }
 
 /**
@@ -77,6 +79,9 @@ class MatrixImpl<E>(override val height: Int, override val width: Int, val e: E)
         set(cell.row, cell.column, value)
     }
 
+    override fun copy(): Matrix<E> = createMatrix(height, width, content.toMutableList())
+
+
     override fun equals(other: Any?): Boolean {
         if (!(other is Matrix<*> &&
                 height == other.height &&
@@ -110,5 +115,14 @@ class MatrixImpl<E>(override val height: Int, override val width: Int, val e: E)
         result = 31 * result + (e?.hashCode() ?: 0)
         result = 31 * result + content.hashCode()
         return result
+    }
+
+    override fun indexOf(e: E): Cell {
+        (0 until this.height).forEach { row ->
+            (0 until this.width)
+                    .filter { this[row, it] == e }
+                    .forEach { return Cell(row, it) }
+        }
+        return Cell(-1, -1)
     }
 }

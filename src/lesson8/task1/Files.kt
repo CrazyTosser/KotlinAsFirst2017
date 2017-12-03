@@ -183,16 +183,30 @@ fun alignFileByWidth(inputName: String, outputName: String) {
     val et = inp.maxBy { it.trim().length }?.length ?: 0
     val outputStream = File(outputName).bufferedWriter()
     for ((index, line) in inp.withIndex()) {
-        val tmp = line.trim()
-        val delta = et - tmp.length
-        val words = tmp.split(" ")
-        val total = delta / words.size
-        var dif = delta % words.size
+        val words = line.trim().split(" ")
         outputStream.write(words[0].trim())
-        for (word in tmp.split(" ").filter { it != words[0] && it.isNotEmpty() }) {
-            (1..total + dif).forEach { outputStream.write(" ") }
-            outputStream.write(word.trim())
-            if (dif > 0) dif--
+        if (words.size > 2) {
+            val delta = et - line.trim().length
+            var dif = delta % (words.size - 2)
+            val total = delta / (words.size - 2)
+            for ((i, word) in words.filter { it != words[0] && it.isNotEmpty() }.withIndex()) {
+                if (dif != total - 1) {
+                    (1..(total + dif)).forEach { outputStream.write(" ") }
+                    if (dif > 0) dif--
+                } else {
+                    if (i in 0 until words.size - 1)
+                        (1..(total)).forEach { outputStream.write(" ") }
+                    else
+                        (1..(dif)).forEach { outputStream.write(" ") }
+                }
+                outputStream.write(word.trim())
+
+            }
+        } else {
+            if (words.size == 2) {
+                (1..(et - words[0].length - words[1].length)).forEach { outputStream.write(" ") }
+                outputStream.write(words[1].trim())
+            }
         }
         if (index in 0 until inp.count() - 1) outputStream.newLine()
     }
@@ -214,7 +228,46 @@ fun alignFileByWidth(inputName: String, outputName: String) {
  * Ключи в ассоциативном массиве должны быть в нижнем регистре.
  *
  */
-fun top20Words(inputName: String): Map<String, Int> = TODO()
+fun combSort(A: Array<Map.Entry<String, Int>>) {
+    var step = A.size
+    var flag = 1
+    var i: Int
+    var temp: Map.Entry<String, Int>
+    while (step > 1 || flag == 1) {
+        if (step > 1)
+            step = (step / 1.247).toInt()
+        flag = 0
+        i = 0
+        while (i + step < A.size) {
+            if (A[i].value > A[i + step].value) {
+                temp = A[i]
+                A[i] = A[i + step]
+                A[i + step] = temp
+                flag = 1
+            }
+            ++i
+        }
+    }
+}
+
+fun top20Words(inputName: String): Map<String, Int> {
+    val words = mutableListOf<String>()
+    File(inputName).readLines()
+            .flatMap { it.split(" ") }
+            .filter { it.matches(Regex("""[а-яА-Яa-zA-Z]{1,}""")) && it.toLowerCase() !in words }
+            .forEach { words.add(it.toLowerCase()) }
+
+    var res = countSubstrings(inputName, words)
+    /*if(res.count()>20) {
+        val r = res.entries.toTypedArray().copyOfRange(0,19)
+        val tmp = mutableMapOf<String,Int>()
+        r.forEach {
+            tmp.put(it.key,it.value)
+        }
+        res = tmp
+    }*/
+    return res
+}
 
 /**
  * Средняя
@@ -271,7 +324,26 @@ fun transliterate(inputName: String, dictionary: Map<Char, String>, outputName: 
  * Обратите внимание: данная функция не имеет возвращаемого значения
  */
 fun chooseLongestChaoticWord(inputName: String, outputName: String) {
-    TODO()
+    val inp = File(inputName).readLines()
+    val max = inp.maxBy { it.length }?.length ?: 0
+    val res = mutableListOf<String>()
+    for (word in inp) {
+        if (word.length < max) continue
+        var c = StringBuilder()
+        var access = true
+        for (it in word.toLowerCase()) {
+            if (c.contains(it)) {
+                access = false
+                break
+            } else {
+                c.append(it)
+            }
+        }
+        if (access) res.add(word)
+    }
+    val out = File(outputName).bufferedWriter()
+    out.write(res.joinToString())
+    out.close()
 }
 
 /**
@@ -318,7 +390,40 @@ Suspendisse <s>et elit in enim tempus iaculis</s>.
  * (Отступы и переносы строк в примере добавлены для наглядности, при решении задачи их реализовывать не обязательно)
  */
 fun markdownToHtmlSimple(inputName: String, outputName: String) {
-    TODO()
+    val head = """<html>
+<body>""".trimMargin()
+    val footer = """</body>
+</html>""".trimMargin()
+    val out = File(outputName).bufferedWriter()
+    out.write(head)
+    for (line in File(inputName).readLines()) {
+        val mark = mutableListOf<Pair<Int, Int>>()
+        var rec = 0
+        for (i in 1 until line.length) {
+            val str = line.replace("*", "[i]").replace("[i][i]", "[b]")
+                    .replace("~~", "[s]")
+            var t = true
+            var c = 0
+            var resStr = StringBuilder()
+            while (c < str.length) {
+                if (str[c] == '[') {
+                    when {
+                        str.substring(c, 2) == "[i]" -> if (t) resStr.append("<i>") else resStr.append("</i>")
+                        str.substring(c, 2) == "[b]" -> if (t) resStr.append("<b>") else resStr.append("</b>")
+                        str.substring(c, 2) == "[s]" -> if (t) resStr.append("<s>") else resStr.append("</s>")
+                    }
+                    t = !t
+                    c += 2
+                } else {
+                    resStr.append(str[c])
+                    c++
+                }
+            }
+            out.write(resStr.toString())
+        }
+    }
+    out.write(footer)
+    out.close()
 }
 
 /**

@@ -517,4 +517,43 @@ fun fifteenGameMoves(matrix: Matrix<Int>, moves: List<Int>): Matrix<Int> {
  *
  * Перед решением этой задачи НЕОБХОДИМО решить предыдущую
  */
-fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> = TODO()
+fun fifteenGameSolution(matrix: Matrix<Int>): List<Int> {
+    var count = 0
+    var transpos = 0
+    var value = 0
+    val a = MutableList(16, { 0 })
+
+    for (i in 0..3) {
+        if (i % 2 == 0) {
+            for (j in 0..3) {
+                value = matrix[i, j];
+                if (value > 0) {
+                    a[count] = value
+                    count++
+                }
+            }
+        } else {
+            for (j in 3 downTo 0) {
+                value = matrix[i, j]
+                if (value > 0) {
+                    a[count] = value
+                    count++
+                }
+            }
+        }
+    }
+    for (i in 0..count - 2) {
+        for (j in i + 1..count - 1) {
+            if (a[i] > a[j]) transpos++
+        }
+    }
+    if (transpos % 2 != 1) {
+        val tmp = matrix[matrix.indexOf(14)]
+        matrix[matrix.indexOf(14)] = matrix[matrix.indexOf(15)]
+        matrix[matrix.indexOf(15)] = tmp
+    }
+    val board = Board(matrix)
+    val solv = Astar(board, Astar.SolverState(board, 0, null))
+    val res = solv.solve()
+    return listOf()
+}

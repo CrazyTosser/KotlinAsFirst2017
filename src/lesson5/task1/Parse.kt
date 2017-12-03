@@ -114,8 +114,8 @@ fun dateDigitToStr(digital: String): String {
  * При неверном формате вернуть пустую строку
  */
 fun flattenPhoneNumber(phone: String): String {
-    if (!phone.matches(Regex("""^\+?[ \d\-\(\)]{1,}$"""))) return ""
-    return phone.replace(Regex("""[ \-\(\)]"""), "")
+    if (!phone.matches(Regex("""^\+?[ \d\-()]+$"""))) return ""
+    return phone.replace(Regex("""[ \-()]"""), "")
 }
 
 /**
@@ -147,7 +147,7 @@ fun bestLongJump(jumps: String): Int {
  */
 fun bestHighJump(jumps: String): Int {
     if (jumps.isEmpty()) return -1
-    if (!jumps.matches(Regex("""^[ \d\-%\+]*$"""))) return -1
+    if (!jumps.matches(Regex("""^[ \d\-%+]*$"""))) return -1
     val wr = jumps.split(' ')
     var res = -1
     for (i in 0 until wr.count() step 2) {
@@ -175,7 +175,7 @@ fun plusMinus(expression: String): Int {
     for (s in wr) {
         if (s.matches(Regex("""(\d+)+"""))) {
             mg++; if (mg !in 0..2) throw IllegalArgumentException()
-        } else if (s.matches(Regex("""[\+-]+"""))) {
+        } else if (s.matches(Regex("""[+\-]+"""))) {
             mg--; if (mg !in 0..2) throw IllegalArgumentException()
         } else throw IllegalArgumentException()
     }
